@@ -1,0 +1,45 @@
+// Voice Agent config for the consented live-qualify screen.
+//
+// This file is the request body for POST /v1/agents, sent unchanged.
+// Values written as ${VAR} are substituted at publish time from the
+// environment, so this JSON is safe to commit and no secret ever enters git.
+//
+// Publish with the AssemblyAI starter convention, then put the returned id in
+// QUALIFY_AGENT_ID.
+{
+  "name": "Captei Voz — qualificação de proprietário",
+
+  // Voice: rafael is AssemblyAI's ONLY Portuguese voice and it carries a
+  // European accent. It has not yet passed the Brazilian listen test.
+  // Do not treat this choice as settled — see docs/bmad/stress-test.md claim 3.
+  "voice": { "voice_id": "rafael" },
+
+  // Steer STT toward the languages we actually expect. Omit for automatic
+  // multilingual detection; declaring them is more accurate when we know.
+  "input": {
+    "language_codes": ["pt"],
+    "keyterms": [
+      "Canasvieiras",
+      "Ingleses",
+      "Cachoeira do Bom Jesus",
+      "Jurerê",
+      "CRECI",
+      "captação",
+      "avaliação",
+      "escritura",
+      "matrícula",
+      "condomínio"
+    ]
+  },
+
+  // Spoken verbatim on connect — it is sent straight to TTS and is NOT run
+  // through the LLM. Write the exact words, never an instruction.
+  // Carries the AI disclosure required by amendment A3.
+  "greeting": "Olá! Aqui é o assistente virtual da imobiliária, uma inteligência artificial. Você pediu uma avaliação do seu imóvel. Posso confirmar alguns detalhes rapidinho?",
+
+  "system_prompt": "Você é um assistente de qualificação de uma imobiliária em Florianópolis, falando por telefone com um proprietário que JÁ solicitou uma avaliação gratuita do imóvel dele.\n\nRegras:\n- Fale português brasileiro, natural e cordial. Frases curtas, uma ideia por vez.\n- Você é uma IA. Se perguntarem, diga que sim, claramente, sem rodeios.\n- Se a pessoa pedir para falar com um humano, confirme que um corretor vai retornar e encerre com educação.\n- Nunca prometa valor de venda, nunca dê estimativa de preço. Isso é do corretor.\n- Colete, nesta ordem: (1) confirmação do endereço, (2) tipo do imóvel e metragem aproximada, (3) finalidade, venda ou aluguel, (4) prazo desejado, (5) expectativa de valor, se ela quiser dizer.\n- Quando tiver o que precisa, chame a ferramenta de registro e depois se despeça.\n- Não invente informação sobre o imóvel. Se não souber, diga que o corretor confirma."
+
+  // Tools: add the qualification write-back before the demo. A tool call is
+  // what demonstrates this is an agent rather than a talking FAQ, and the
+  // judging rubric rewards it. See docs/bmad/recommended-mvp.md §9 step 3.
+}
