@@ -56,7 +56,7 @@ render, and persist an approval log.
 | Rewrite | **AssemblyAI LLM Gateway** | Keeps the whole pipeline on sponsor infrastructure, which matters for judging. Note it is billed on tokens and is **not** covered by the free tier. |
 | TTS | **AssemblyAI Voice Agent API, verbatim-greeting render** | The only AssemblyAI path to synthesised audio. See §4 — this is the load-bearing technical decision in the whole plan. |
 | Live agent | **AssemblyAI Voice Agent API, browser integration** | Server mints the token, browser opens the socket. |
-| Audio encode | **ffmpeg** → Ogg/Opus, **mono, ≤ 512 KB** | PCM out of the Voice Agent has to become a format WhatsApp accepts as a *voice note*. 512 KB is the real ceiling, not the 16 MB media limit — above it the play icon degrades to a download arrow. MIME must be `audio/ogg; codecs=opus`. |
+| Audio encode | **ffmpeg via `@ffmpeg-installer/ffmpeg`** → Ogg/Opus, **mono, ≤ 512 KB** | PCM out of the Voice Agent has to become a format WhatsApp accepts as a *voice note*. 512 KB is the real ceiling, not the 16 MB media limit — above it the play icon degrades to a download arrow. MIME must be `audio/ogg; codecs=opus`. **ffmpeg is not installed on this machine**, so use the npm-bundled static binary rather than a system dependency — that also removes a deploy-time assumption about the host image. |
 | Styling | Tailwind | No opinion, just fast. |
 
 **Deliberately excluded:** pg-boss, n8n, any queue, any auth provider, any
@@ -345,9 +345,9 @@ before the human approves a build.
 
 | # | Step | Kills the project if |
 |---|---|---|
-| 0 | **Accent listen test** (§5) and **greeting-length test** (§4). No repo changes. | Both fail and there is no acceptable TTS route. |
-| 1 | Verify the auth header on each endpoint by hand. IDEA-LOCK and the docs disagree — the docs show a bare key on `/v1/agents` and `Bearer` on `/v1/token`. | — but silently costs a day of 401s if skipped. |
-| 2 | Skeleton app, deployed, HTTPS, ffmpeg confirmed present on the host. | Host cannot run ffmpeg or hold a WebSocket. |
+| 0 | **Accent listen test** (§5) and **greeting-length test** (§4). No repo changes. **Blocked: needs an API key, and the listen test needs Brazilian ears.** | Both fail and there is no acceptable TTS route. |
+| 1 | Verify the auth header on each endpoint by hand. **Now known to be three-way, not two-way: `Bearer` on the Voice Agent token endpoint, bare key on `POST /v1/agents` and on the Streaming STT token endpoint.** | — but silently costs a day of 401s if skipped. |
+| 2 | Skeleton app, deployed, HTTPS, ffmpeg available. **Skeleton done and building (Next.js 15, React 19, Tailwind 4, Drizzle). Deploy still to do.** | Host cannot run ffmpeg or hold a WebSocket. |
 | 3 | Token endpoint + Screen 2 (live qualify), including one tool call. **Do the agent first**, because it is the part that makes this a voice-agent submission and the part most likely to surprise. | Voice Agent is unavailable or unusable from the browser. |
 | 4 | STT + rewrite, text only, no audio. Screen 1 renders text and stops. | Rewrite quality is bad — visible immediately and cheap to test. |
 | 5 | Render path + Opus encode. Audio appears in Screen 1. | The greeting render does not work at length; fall back per §4. |
