@@ -1,11 +1,14 @@
 import Link from "next/link";
 
+import { QualifySession } from "./QualifySession";
+import { DEMO_CONTACT_ID } from "@/lib/consent/demo";
+import { resolveReachableContact } from "@/lib/consent/gate";
+
 /**
- * Screen 2 — consented live qualify. Skeleton.
+ * Screen 2 — consented live qualify.
  *
- * Built FIRST (build step 3). This is the screen with a real conversational
- * loop — turn detection, barge-in, tool calling — and it is what makes this a
- * voice-agent submission rather than a voice-powered tool.
+ * Built FIRST. This is the conversational loop (turn detection, barge-in,
+ * tool calling) that makes the submission a voice-agent project.
  * See docs/bmad/stress-test.md, claim 4.
  */
 export default async function QualifyPage({
@@ -14,6 +17,8 @@ export default async function QualifyPage({
   params: Promise<{ contactId: string }>;
 }) {
   const { contactId } = await params;
+  const gated = await resolveReachableContact(contactId);
+  const seeded = contactId === DEMO_CONTACT_ID;
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-16">
@@ -23,20 +28,26 @@ export default async function QualifyPage({
       <h1 className="mt-4 text-2xl font-semibold tracking-tight">
         Qualificação ao vivo
       </h1>
-      <p className="mt-1 text-sm text-neutral-500">
-        Contato <code>{contactId}</code>
-      </p>
 
-      <p className="mt-6 text-sm text-neutral-600 dark:text-neutral-400">
-        Sessão de voz com um proprietário que já enviou “Quanto vale o meu
-        imóvel?” e registrou consentimento. O agente confirma o imóvel, a
-        finalidade, o prazo e a expectativa de preço, e grava o resultado.
-      </p>
+      {seeded ? (
+        <p className="mt-4 rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200">
+          Contato <strong>semeado para o hackathon</strong>. O CRM de captação
+          ainda não existe, então este opt-in não é de um formulário real.
+          Está visível de propósito: a tese do produto é consentimento, e o
+          demo não esconde o atalho.
+        </p>
+      ) : null}
 
-      <p className="mt-8 rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200">
-        Esqueleto. Requer <code>ASSEMBLYAI_API_KEY</code> no servidor e um
-        agente publicado (<code>QUALIFY_AGENT_ID</code>). Use Chrome ou Edge.
-      </p>
+      {!gated.ok ? (
+        <p className="mt-6 rounded-lg border border-red-300 bg-red-50 p-4 text-sm text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-200">
+          Recusa do gate: {gated.reason}
+        </p>
+      ) : (
+        <QualifySession
+          contactId={gated.contact.id}
+          contactName={gated.contact.fullName}
+        />
+      )}
     </main>
   );
 }

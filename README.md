@@ -1,8 +1,9 @@
 # Captei Voz
 
 **Status:** idea locked 2026-09-08, stress-tested and amended the same day.
-Amendments A1–A4 approved — see `docs/bmad/stress-test.md`. Three verification
-tests must pass before any application code is written (`recommended-mvp.md` §9).
+Amendments A1–A4 approved — see `docs/bmad/stress-test.md`. Skeleton and live
+qualify screen are in the repo; composed-note TTS still waits on the listen
+test.
 
 AssemblyAI Voice Agent Hackathon (lablab, 1–30 Sep 2026) slice of Captei.  
 Not Truquipoker. Not Connect IA / MucoCreate. Not cold WhatsApp captacão.
@@ -26,13 +27,15 @@ Hero 2 gets built first. It is the one that reads as a *voice agent* rather than
 
 ## Next
 
-BMAD analysis is done. Before any application code, three tests (about a day):
+Skeleton is in the repo. Live qualify (`/qualify/demo`) is the first real
+screen: Voice Agent in the browser, tool write-back, `session.end` on hangup.
 
-1. **Listen test** — play `rafael` output to Brazilian listeners cold.
-2. **Greeting-length test** — confirm the verbatim render path holds a full note.
-3. **Auth header check** — per endpoint, by hand.
+To run it you still need `ASSEMBLYAI_API_KEY` in `.env.local` (copy
+`.env.example`). `DATABASE_URL` and `QUALIFY_AGENT_ID` are optional for the
+seeded demo.
 
-Then build in the order set out in `docs/bmad/recommended-mvp.md` §9.
+Before relying on `rafael` for composed notes, the listen test and
+greeting-length test in `docs/bmad/recommended-mvp.md` §9 still have to pass.
 
 Analysis: `docs/bmad/` — `product-brief.md`, `stress-test.md`, `recommended-mvp.md`.
 Legal rails: `docs/IDEA-LOCK.md` and `C:\Users\Admin\Projects\CRM\docs\captacao\`.

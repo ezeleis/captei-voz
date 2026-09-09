@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { env } from "@/lib/env";
+import { env, isConfigured } from "@/lib/env";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -19,6 +19,13 @@ export const runtime = "nodejs";
  * samples do, so GET is what we do.
  */
 export async function GET() {
+  if (!isConfigured("ASSEMBLYAI_API_KEY")) {
+    return NextResponse.json(
+      { error: "ASSEMBLYAI_API_KEY não configurada no servidor." },
+      { status: 503 },
+    );
+  }
+
   const url = new URL("https://streaming.assemblyai.com/v3/token");
   url.searchParams.set("expires_in_seconds", "120");
   url.searchParams.set("max_session_duration_seconds", "300");

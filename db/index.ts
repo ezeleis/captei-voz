@@ -21,9 +21,27 @@ export const schema = {
 
 const globalForDb = globalThis as unknown as {
   client: ReturnType<typeof postgres> | undefined;
+  db: ReturnType<typeof drizzle<typeof schema>> | undefined;
 };
 
-const client = globalForDb.client ?? postgres(env.databaseUrl);
-if (process.env.NODE_ENV !== "production") globalForDb.client = client;
+function createDb() {
+  const client = globalForDb.client ?? postgres(env.databaseUrl);
+  if (process.env.NODE_ENV !== "production") globalForDb.client = client;
+  return drizzle(client, { schema });
+}
 
-export const db = drizzle(client, { schema });
+/**
+ * Lazy so pages that do not need Postgres (the landing page, the demo
+ * qualify path) can render when DATABASE_URL is unset. Accessing `db`
+ * without the URL still throws, via `env.databaseUrl`.
+ */
+export const db: ReturnType<typeof drizzle<typeof schema>> = new Proxy(
+  {} as ReturnType<typeof drizzle<typeof schema>>,
+  {
+    get(_target, prop, receiver) {
+      const instance = (globalForDb.db ??= createDb());
+      const value = Reflect.get(instance, prop, receiver);
+      return typeof value === "function" ? value.bind(instance) : value;
+    },
+  },
+);

@@ -12,8 +12,8 @@ import { isConfigured } from "@/lib/env";
 export default function Home() {
   const checks = [
     { name: "ASSEMBLYAI_API_KEY", ok: isConfigured("ASSEMBLYAI_API_KEY") },
-    { name: "DATABASE_URL", ok: isConfigured("DATABASE_URL") },
-    { name: "QUALIFY_AGENT_ID", ok: isConfigured("QUALIFY_AGENT_ID") },
+    { name: "DATABASE_URL", ok: isConfigured("DATABASE_URL"), optional: true },
+    { name: "QUALIFY_AGENT_ID", ok: isConfigured("QUALIFY_AGENT_ID"), optional: true },
   ];
 
   return (
@@ -58,7 +58,11 @@ export default function Home() {
                 {check.name}
               </code>
               <span className="text-neutral-500">
-                {check.ok ? "configurado" : "não configurado"}
+                {check.ok
+                  ? "configurado"
+                  : "optional" in check && check.optional
+                    ? "opcional — não configurado"
+                    : "não configurado"}
               </span>
             </li>
           ))}

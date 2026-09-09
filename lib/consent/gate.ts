@@ -4,6 +4,8 @@ import { eq } from "drizzle-orm";
 
 import { db } from "@/db";
 import { contacts } from "@/db/schema/contacts";
+import { isConfigured } from "@/lib/env";
+import { DEMO_CONTACT_ID, demoReachableContact } from "@/lib/consent/demo";
 
 /**
  * THE GATE.
@@ -46,6 +48,19 @@ export type GateResult = { ok: true; contact: ReachableContact } | GateRefusal;
 export async function resolveReachableContact(
   contactId: string,
 ): Promise<GateResult> {
+  if (contactId === DEMO_CONTACT_ID) {
+    return { ok: true, contact: demoReachableContact() };
+  }
+
+  if (!isConfigured("DATABASE_URL")) {
+    return {
+      ok: false,
+      code: "not_found",
+      reason:
+        "Banco não configurado. Use o contato de demonstração em /qualify/demo.",
+    };
+  }
+
   const [row] = await db
     .select()
     .from(contacts)

@@ -8,7 +8,9 @@
 class PCMProcessor extends AudioWorkletProcessor {
   constructor(options) {
     super();
-    const { inputSampleRate, targetSampleRate } = options.processorOptions;
+    const opts = options?.processorOptions ?? {};
+    const inputSampleRate = opts.inputSampleRate || sampleRate;
+    const targetSampleRate = opts.targetSampleRate || 24000;
     this.ratio = inputSampleRate / targetSampleRate;
   }
 
