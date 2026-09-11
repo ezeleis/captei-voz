@@ -14,7 +14,7 @@ Confirmed in the Truquipoker/Shipaton close-out chat.
 | Track B | Public-signal worklist → human first contact (call / portal form). No WhatsApp automation. **No voice note, ever, by any mechanism** |
 | Compose desk | Corretor speech (ES/EN/PT) → professional PT-BR (or owner language) text + audio → approve → **deliver only inside an open, owner-initiated WhatsApp window. Never as first contact.** In the hackathon MVP delivery is a manual handoff (download or `wa.me`); no automated sender is built |
 | Live qualify | AssemblyAI Voice Agent after consent exists |
-| Clone | Out of hackathon. ElevenLabs + corretor consent later. Hackathon uses a stock voice — but **`rafael` is European Portuguese (🇵🇹) and must pass a Brazilian listen test before adoption. If it fails, a third-party pt-BR TTS voice carries the composed note and AssemblyAI retains STT + live agent** (permitted: the Voice Agent API is not mandatory for this event) |
+| Clone | Out of hackathon. ElevenLabs + corretor consent later. Hackathon uses stock Voice Agent voice **`rafael`**. Docs list it as 🇵🇹; **listen test 2026-09-09 (project owner, Brazilian ear): sounded Brazilian, not European.** Keep `rafael` for live qualify and composed-note render. |
 | Disclosure | Every composed note discloses synthetic voice **in the audio itself**, carries the corretor’s full name and CRECI number in a **non-editable** block, and offers a human-reply affordance. Approvals logged with timestamps, retained 5 years. **“Soa como você” is never used for a stock voice** |
 
 **Why “send” became “deliver in an open window”.** AUDIO is not a supported

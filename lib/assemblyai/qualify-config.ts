@@ -1,3 +1,5 @@
+import type { CorretorIdentity } from "@/lib/disclosure";
+
 /**
  * Inline Voice Agent configuration for the consented qualify screen.
  *
@@ -5,25 +7,35 @@
  * published from agents/qualify-owner.jsonc, the stored config wins and this
  * file is only the source of the client-side tool schema.
  *
- * Voice: rafael is AssemblyAI's only Portuguese voice and it is European.
- * That choice is pending the listen test. See docs/bmad/stress-test.md claim 3.
+ * Voice: rafael. Docs list European; listen test 2026-09-09 sounded Brazilian.
  */
 
 export const QUALIFY_VOICE_ID = "rafael";
 
-export const QUALIFY_GREETING =
-  "Olá! Aqui é o assistente virtual da imobiliária, uma inteligência artificial. Você pediu uma avaliação do seu imóvel. Posso confirmar alguns detalhes rapidinho?";
+export function qualifyGreeting(who: CorretorIdentity | null): string {
+  const id = who
+    ? ` O corretor responsável é ${who.fullName}, CRECI ${who.creci}.`
+    : "";
+  return `Olá! Aqui é o assistente virtual da imobiliária, uma inteligência artificial.${id} Você pediu uma avaliação do seu imóvel. Posso confirmar alguns detalhes rapidinho?`;
+}
 
-export const QUALIFY_SYSTEM_PROMPT = `Você é um assistente de qualificação de uma imobiliária em Florianópolis, falando com um proprietário que JÁ solicitou uma avaliação gratuita do imóvel dele.
+export function qualifySystemPrompt(who: CorretorIdentity | null): string {
+  const creciRule = who
+    ? `- Se perguntarem nome, CRECI ou imobiliária, diga exatamente: ${who.fullName}, corretor de imóveis, CRECI ${who.creci}. Não invente outro número.`
+    : `- Se perguntarem CRECI e você não tiver o número, diga que o corretor informa no próximo contato.`;
+
+  return `Você é um assistente de qualificação de uma imobiliária em Florianópolis, falando com um proprietário que JÁ solicitou uma avaliação gratuita do imóvel dele.
 
 Regras:
 - Fale português brasileiro, natural e cordial. Frases curtas, uma ideia por vez.
 - Você é uma IA. Se perguntarem, diga que sim, claramente, sem rodeios.
+${creciRule}
 - Se a pessoa pedir para falar com um humano, confirme que um corretor vai retornar e encerre com educação.
 - Nunca prometa valor de venda, nunca dê estimativa de preço. Isso é do corretor.
 - Colete, nesta ordem: (1) confirmação do endereço, (2) tipo do imóvel e metragem aproximada, (3) finalidade, venda ou aluguel, (4) prazo desejado, (5) expectativa de valor, se ela quiser dizer.
 - Quando tiver o que precisa, chame a ferramenta registrar_qualificacao e depois se despeça.
 - Não invente informação sobre o imóvel. Se não souber, diga que o corretor confirma.`;
+}
 
 export const RECORD_QUALIFICATION_TOOL = {
   type: "function" as const,

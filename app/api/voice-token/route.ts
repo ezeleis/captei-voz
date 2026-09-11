@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { env, isConfigured } from "@/lib/env";
+import { corretorIdentity, env, isConfigured } from "@/lib/env";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -50,6 +50,7 @@ export async function GET() {
     {
       token,
       agentId: isConfigured("QUALIFY_AGENT_ID") ? env.qualifyAgentId : null,
+      corretor: corretorIdentity(),
     },
     { headers: { "Cache-Control": "no-store" } },
   );

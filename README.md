@@ -27,15 +27,15 @@ Hero 2 gets built first. It is the one that reads as a *voice agent* rather than
 
 ## Next
 
-Skeleton is in the repo. Live qualify (`/qualify/demo`) is the first real
-screen: Voice Agent in the browser, tool write-back, `session.end` on hangup.
+Live qualify is working (`/qualify/demo`). Compose desk text path is at
+`/compose/demo` — speak, rewrite, approve text. Audio render is next.
 
-To run it you still need `ASSEMBLYAI_API_KEY` in `.env.local` (copy
-`.env.example`). `DATABASE_URL` and `QUALIFY_AGENT_ID` are optional for the
-seeded demo.
+`rafael` passed a Brazilian listen test on 2026-09-09. Greeting-length test
+for verbatim TTS is still open.
 
-Before relying on `rafael` for composed notes, the listen test and
-greeting-length test in `docs/bmad/recommended-mvp.md` §9 still have to pass.
+Need `ASSEMBLYAI_API_KEY` plus `CORRETOR_FULL_NAME` and `CORRETOR_CRECI` in
+`.env.local`. Restart `npm run dev` after changing env. No quotes unless the
+value has spaces.
 
 Analysis: `docs/bmad/` — `product-brief.md`, `stress-test.md`, `recommended-mvp.md`.
 Legal rails: `docs/IDEA-LOCK.md` and `C:\Users\Admin\Projects\CRM\docs\captacao\`.

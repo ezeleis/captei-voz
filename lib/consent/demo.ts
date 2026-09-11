@@ -17,6 +17,13 @@ import type { ReachableContact } from "@/lib/consent/gate";
  */
 
 export const DEMO_CONTACT_ID = "demo";
+export const DEMO_PROPERTY_ID = "demo";
+
+export const DEMO_PROPERTY = {
+  id: DEMO_PROPERTY_ID,
+  label: "Apto. 50 m² — Rodovia Virgílio Várzea (demonstração)",
+  neighbourhood: "Saco Grande",
+} as const;
 
 export const DEMO_CONTACT_ROW = {
   id: DEMO_CONTACT_ID,

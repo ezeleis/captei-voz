@@ -14,14 +14,16 @@ export default function Home() {
     { name: "ASSEMBLYAI_API_KEY", ok: isConfigured("ASSEMBLYAI_API_KEY") },
     { name: "DATABASE_URL", ok: isConfigured("DATABASE_URL"), optional: true },
     { name: "QUALIFY_AGENT_ID", ok: isConfigured("QUALIFY_AGENT_ID"), optional: true },
+    { name: "CORRETOR_CRECI", ok: isConfigured("CORRETOR_CRECI") },
   ];
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-16">
       <h1 className="text-3xl font-semibold tracking-tight">Captei Voz</h1>
       <p className="mt-3 text-neutral-600 dark:text-neutral-400">
-        O corretor fala rápido. Captei Voz devolve um áudio profissional em
-        português — que ele <strong>aprova</strong> antes de qualquer envio.
+        O corretor fala rápido. Captei Voz devolve um áudio profissional no
+        idioma do proprietário — que ele <strong>aprova</strong> antes de
+        qualquer envio.
       </p>
 
       <nav className="mt-10 grid gap-3">
@@ -41,7 +43,8 @@ export default function Home() {
         >
           <span className="font-medium">Mesa de composição</span>
           <span className="mt-1 block text-sm text-neutral-600 dark:text-neutral-400">
-            Fale em PT, ES ou EN. Revise o texto e o áudio. Aprove.
+            Fale em PT, ES ou EN. O recado sai no idioma do cliente. Revise e
+            aprove.
           </span>
         </Link>
       </nav>
@@ -53,7 +56,10 @@ export default function Home() {
         <ul className="mt-3 space-y-1 text-sm">
           {checks.map((check) => (
             <li key={check.name} className="flex items-center gap-2">
-              <span aria-hidden>{check.ok ? "✅" : "⚪"}</span>
+              <span
+                aria-hidden
+                className={`inline-block h-2 w-2 rounded-full ${check.ok ? "bg-emerald-600" : "bg-neutral-400"}`}
+              />
               <code className="text-neutral-700 dark:text-neutral-300">
                 {check.name}
               </code>

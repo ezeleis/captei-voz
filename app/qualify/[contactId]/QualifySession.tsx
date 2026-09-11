@@ -2,13 +2,15 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { PcmPlayer } from "@/lib/audio/play-pcm";
 import {
-  QUALIFY_GREETING,
-  QUALIFY_SYSTEM_PROMPT,
   QUALIFY_VOICE_ID,
   RECORD_QUALIFICATION_TOOL,
+  qualifyGreeting,
+  qualifySystemPrompt,
   type QualificationPayload,
 } from "@/lib/assemblyai/qualify-config";
+import type { CorretorIdentity } from "@/lib/disclosure";
 
 type SessionState = "idle" | "connecting" | "live" | "ending" | "ended" | "error";
 
@@ -33,8 +35,8 @@ export function QualifySession({ contactId, contactName }: Props) {
 
   const wsRef = useRef<WebSocket | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
+  const playerRef = useRef<PcmPlayer | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const playbackTimeRef = useRef(0);
   const readyRef = useRef(false);
   const lastEventRef = useRef<string | null>(null);
   const pendingToolsRef = useRef<
@@ -69,6 +71,8 @@ export function QualifySession({ contactId, contactName }: Props) {
     readyRef.current = false;
     streamRef.current?.getTracks().forEach((track) => track.stop());
     streamRef.current = null;
+    playerRef.current?.dispose();
+    playerRef.current = null;
     void audioCtxRef.current?.close();
     audioCtxRef.current = null;
     const ws = wsRef.current;
@@ -100,18 +104,22 @@ export function QualifySession({ contactId, contactName }: Props) {
       const tokenBody = (await tokenRes.json()) as {
         token?: string;
         agentId?: string | null;
+        corretor?: CorretorIdentity | null;
         error?: string;
       };
       if (!tokenRes.ok || !tokenBody.token) {
         throw new Error(tokenBody.error ?? "não foi possível obter o token");
       }
 
+      // One context for mic and TTS. A second context with latencyHint
+      // "playback" or setSinkId can send audio to speakers while the
+      // headset is only opened for capture — playback then sounds dead.
       const audioCtx = new AudioContext();
       await audioCtx.resume();
       audioCtxRef.current = audioCtx;
-      playbackTimeRef.current = audioCtx.currentTime;
+      playerRef.current = await PcmPlayer.attach(audioCtx);
 
-      await audioCtx.audioWorklet.addModule("/pcm-processor.js");
+      await audioCtx.audioWorklet.addModule("/pcm-processor.js?v=2");
       const worklet = new AudioWorkletNode(audioCtx, "pcm-processor", {
         processorOptions: {
           inputSampleRate: audioCtx.sampleRate,
@@ -123,8 +131,7 @@ export function QualifySession({ contactId, contactName }: Props) {
         audio: { echoCancellation: true, noiseSuppression: false },
       });
       streamRef.current = stream;
-      const source = audioCtx.createMediaStreamSource(stream);
-      source.connect(worklet);
+      audioCtx.createMediaStreamSource(stream).connect(worklet);
 
       const wsUrl = new URL("wss://agents.assemblyai.com/v1/ws");
       wsUrl.searchParams.set("token", tokenBody.token);
@@ -147,11 +154,12 @@ export function QualifySession({ contactId, contactName }: Props) {
       };
 
       ws.addEventListener("open", () => {
+        const who = tokenBody.corretor ?? null;
         const session = tokenBody.agentId
           ? { agent_id: tokenBody.agentId }
           : {
-              system_prompt: QUALIFY_SYSTEM_PROMPT,
-              greeting: QUALIFY_GREETING,
+              system_prompt: qualifySystemPrompt(who),
+              greeting: qualifyGreeting(who),
               tools: [RECORD_QUALIFICATION_TOOL],
               input: { language_codes: ["pt"] },
               output: {
@@ -194,16 +202,15 @@ export function QualifySession({ contactId, contactName }: Props) {
             lastEventRef.current = msg.type;
             break;
           case "reply.audio":
-            if (msg.data && audioCtxRef.current) playPcm(audioCtxRef.current, msg.data, playbackTimeRef);
+            if (msg.data) playerRef.current?.enqueueBase64(msg.data);
             break;
           case "reply.done":
             lastEventRef.current = "reply.done";
             if (msg.status === "interrupted") {
               pendingToolsRef.current = [];
-              if (audioCtxRef.current) {
-                playbackTimeRef.current = audioCtxRef.current.currentTime;
-              }
+              playerRef.current?.flush();
             } else {
+              playerRef.current?.drain();
               flushTools();
             }
             break;
@@ -347,29 +354,4 @@ export function QualifySession({ contactId, contactName }: Props) {
       </ol>
     </section>
   );
-}
-
-function playPcm(
-  audioCtx: AudioContext,
-  base64: string,
-  playbackTimeRef: { current: number },
-) {
-  const raw = atob(base64);
-  const pcm16 = new Int16Array(raw.length / 2);
-  for (let i = 0; i < pcm16.length; i++) {
-    pcm16[i] = raw.charCodeAt(i * 2) | (raw.charCodeAt(i * 2 + 1) << 8);
-  }
-  const float32 = new Float32Array(pcm16.length);
-  for (let i = 0; i < pcm16.length; i++) {
-    float32[i] = (pcm16[i] ?? 0) / 32768;
-  }
-  const buffer = audioCtx.createBuffer(1, float32.length, 24000);
-  buffer.getChannelData(0).set(float32);
-  const src = audioCtx.createBufferSource();
-  src.buffer = buffer;
-  src.connect(audioCtx.destination);
-  const now = audioCtx.currentTime;
-  playbackTimeRef.current = Math.max(playbackTimeRef.current, now);
-  src.start(playbackTimeRef.current);
-  playbackTimeRef.current += buffer.duration;
 }
