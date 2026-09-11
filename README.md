@@ -27,11 +27,12 @@ Hero 2 gets built first. It is the one that reads as a *voice agent* rather than
 
 ## Next
 
-Live qualify is working (`/qualify/demo`). Compose desk text path is at
-`/compose/demo` — speak, rewrite, approve text. Audio render is next.
+Live qualify is working (`/qualify/demo`). Compose desk is at `/compose/demo`
+— speak, rewrite in the owner language, render verbatim audio with `rafael`,
+approve. Playback uses the continuous worklet on one AudioContext.
 
-`rafael` passed a Brazilian listen test on 2026-09-09. Greeting-length test
-for verbatim TTS is still open.
+Greeting-length test for long notes is still open. Opus encode / download
+handoff is next after that.
 
 Need `ASSEMBLYAI_API_KEY` plus `CORRETOR_FULL_NAME` and `CORRETOR_CRECI` in
 `.env.local`. Restart `npm run dev` after changing env. No quotes unless the

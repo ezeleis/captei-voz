@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { PcmPlayer } from "@/lib/audio/play-pcm";
 import { assembleFinalNote, type CorretorIdentity } from "@/lib/disclosure";
 import {
   NOTE_LANG_LABEL,
@@ -10,6 +11,7 @@ import {
 } from "@/lib/note-lang";
 
 type DeskState = "idle" | "listening" | "rewriting" | "ready" | "error";
+type RenderState = "idle" | "rendering" | "ready" | "playing";
 
 type Props = {
   propertyLabel: string;
@@ -27,12 +29,26 @@ export function ComposeDesk({ propertyLabel, contactName }: Props) {
   const [rewritten, setRewritten] = useState("");
   const [identity, setIdentity] = useState<CorretorIdentity | null>(null);
   const [approved, setApproved] = useState(false);
+  const [renderState, setRenderState] = useState<RenderState>("idle");
+  const [audioBase64, setAudioBase64] = useState<string | null>(null);
+  const [audioDurationMs, setAudioDurationMs] = useState<number | null>(null);
+
+  const playerRef = useRef<PcmPlayer | null>(null);
+  const playCtxRef = useRef<AudioContext | null>(null);
 
   const wsRef = useRef<WebSocket | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const readyRef = useRef(false);
   const turnsRef = useRef<Map<number, string>>(new Map());
+
+  const stopPlayback = useCallback(() => {
+    playerRef.current?.dispose();
+    playerRef.current = null;
+    void playCtxRef.current?.close();
+    playCtxRef.current = null;
+    setRenderState((current) => (current === "playing" ? "ready" : current));
+  }, []);
 
   const cleanup = useCallback(() => {
     readyRef.current = false;
@@ -79,6 +95,9 @@ export function ComposeDesk({ propertyLabel, contactName }: Props) {
         setIdentity(body.identity ?? null);
         setNoteLang(outputLang);
         setApproved(false);
+        setAudioBase64(null);
+        setAudioDurationMs(null);
+        setRenderState("idle");
         setState("ready");
       } catch (err) {
         setState("error");
@@ -209,9 +228,61 @@ export function ComposeDesk({ propertyLabel, contactName }: Props) {
     return identity ? assembleFinalNote(rewritten, identity, noteLang) : rewritten;
   }, [identity, noteLang, rewritten]);
 
+  const renderAudio = useCallback(async () => {
+    if (!finalSpoken) return;
+    stopPlayback();
+    setRenderState("rendering");
+    setError(null);
+    try {
+      const response = await fetch("/api/render", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: finalSpoken }),
+      });
+      const body = (await response.json()) as {
+        audio?: string;
+        durationMs?: number;
+        error?: string;
+      };
+      if (!response.ok || !body.audio) {
+        throw new Error(body.error ?? "falha ao gerar o áudio");
+      }
+      setAudioBase64(body.audio);
+      setAudioDurationMs(body.durationMs ?? null);
+      setRenderState("ready");
+    } catch (err) {
+      setRenderState("idle");
+      setError(err instanceof Error ? err.message : "falha ao gerar o áudio");
+    }
+  }, [finalSpoken, stopPlayback]);
+
+  const playAudio = useCallback(async () => {
+    if (!audioBase64) return;
+    stopPlayback();
+    setRenderState("playing");
+    try {
+      const ctx = new AudioContext();
+      await ctx.resume();
+      playCtxRef.current = ctx;
+      const player = await PcmPlayer.attach(ctx);
+      playerRef.current = player;
+      player.enqueueBase64(audioBase64);
+      const seconds = (audioDurationMs ?? 0) / 1000 + 0.4;
+      window.setTimeout(() => {
+        stopPlayback();
+      }, Math.max(seconds, 1) * 1000);
+    } catch (err) {
+      stopPlayback();
+      setError(err instanceof Error ? err.message : "falha ao tocar o áudio");
+    }
+  }, [audioBase64, audioDurationMs, stopPlayback]);
+
   useEffect(() => {
-    return () => cleanup();
-  }, [cleanup]);
+    return () => {
+      cleanup();
+      stopPlayback();
+    };
+  }, [cleanup, stopPlayback]);
 
   return (
     <section className="mt-8 space-y-6">
@@ -317,6 +388,9 @@ export function ComposeDesk({ propertyLabel, contactName }: Props) {
                 onChange={(event) => {
                   setRewritten(event.target.value);
                   setApproved(false);
+                  setAudioBase64(null);
+                  setAudioDurationMs(null);
+                  setRenderState("idle");
                 }}
               />
             ) : (
@@ -337,15 +411,42 @@ export function ComposeDesk({ propertyLabel, contactName }: Props) {
           ) : null}
           <p className="mt-2 whitespace-pre-wrap">{finalSpoken}</p>
           <p className="mt-4 text-xs text-neutral-500">
-            Áudio ainda não é gerado nesta tela. Aprovação registra o texto.
+            O áudio é a voz <code>rafael</code>, palavra por palavra. A
+            síntese dura cerca do tempo do recado.
+            {audioDurationMs
+              ? ` Último render: ${(audioDurationMs / 1000).toFixed(1)} s.`
+              : ""}
           </p>
-          <button
-            type="button"
-            onClick={() => setApproved(true)}
-            className="mt-3 rounded-lg border border-neutral-300 px-4 py-2 text-sm dark:border-neutral-700"
-          >
-            {approved ? "Aprovado" : "Aprovar texto"}
-          </button>
+          <div className="mt-3 flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={() => void renderAudio()}
+              disabled={renderState === "rendering"}
+              className="rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-40 dark:bg-neutral-100 dark:text-neutral-900"
+            >
+              {renderState === "rendering"
+                ? "Gerando áudio…"
+                : audioBase64
+                  ? "Gerar de novo"
+                  : "Gerar áudio"}
+            </button>
+            <button
+              type="button"
+              onClick={() => void playAudio()}
+              disabled={!audioBase64 || renderState === "rendering"}
+              className="rounded-lg border border-neutral-300 px-4 py-2 text-sm disabled:opacity-40 dark:border-neutral-700"
+            >
+              {renderState === "playing" ? "Tocando…" : "Ouvir"}
+            </button>
+            <button
+              type="button"
+              onClick={() => setApproved(true)}
+              disabled={!audioBase64}
+              className="rounded-lg border border-neutral-300 px-4 py-2 text-sm disabled:opacity-40 dark:border-neutral-700"
+            >
+              {approved ? "Aprovado" : "Aprovar texto e áudio"}
+            </button>
+          </div>
         </aside>
       ) : null}
     </section>

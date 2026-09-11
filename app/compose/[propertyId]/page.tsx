@@ -29,8 +29,8 @@ export default async function ComposePage({
       {seeded ? (
         <p className="mt-4 rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200">
           Destino <strong>semeado</strong>. O áudio só poderia ser entregue
-          dentro de uma janela aberta pelo proprietário — e nesta tela ainda
-          não há envio, só rascunho + reescrita + aprovação do texto.
+          dentro de uma janela aberta pelo proprietário — nesta tela o envio
+          continua manual. Gere o recado, ouça e aprove.
         </p>
       ) : null}
 
