@@ -3,9 +3,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { PcmPlayer } from "@/lib/audio/play-pcm";
+import { downloadWav, pcm16LeBase64ToWavBlob } from "@/lib/audio/pcm-to-wav";
 import { renderVerbatimInBrowser } from "@/lib/audio/render-verbatim-browser";
 import { QUALIFY_VOICE_ID } from "@/lib/assemblyai/qualify-config";
 import { assembleFinalNote, type CorretorIdentity } from "@/lib/disclosure";
+import { waMeUrl, wavFilename } from "@/lib/handoff";
 import {
   NOTE_LANG_LABEL,
   NOTE_LANGS,
@@ -18,9 +20,16 @@ type RenderState = "idle" | "rendering" | "ready" | "playing";
 type Props = {
   propertyLabel: string;
   contactName: string;
+  contactPhoneE164: string;
+  seeded?: boolean;
 };
 
-export function ComposeDesk({ propertyLabel, contactName }: Props) {
+export function ComposeDesk({
+  propertyLabel,
+  contactName,
+  contactPhoneE164,
+  seeded = false,
+}: Props) {
   const [state, setState] = useState<DeskState>("idle");
   const [inputLang, setInputLang] = useState<NoteLang>("pt");
   const [outputLang, setOutputLang] = useState<NoteLang>("pt");
@@ -31,6 +40,7 @@ export function ComposeDesk({ propertyLabel, contactName }: Props) {
   const [rewritten, setRewritten] = useState("");
   const [identity, setIdentity] = useState<CorretorIdentity | null>(null);
   const [approved, setApproved] = useState(false);
+  const [copied, setCopied] = useState(false);
   const [renderState, setRenderState] = useState<RenderState>("idle");
   const [audioBase64, setAudioBase64] = useState<string | null>(null);
   const [audioDurationMs, setAudioDurationMs] = useState<number | null>(null);
@@ -246,6 +256,22 @@ export function ComposeDesk({ propertyLabel, contactName }: Props) {
     }
   }, [finalSpoken, stopPlayback]);
 
+  const downloadAudio = useCallback(() => {
+    if (!audioBase64) return;
+    downloadWav(pcm16LeBase64ToWavBlob(audioBase64), wavFilename(contactName));
+  }, [audioBase64, contactName]);
+
+  const copyNote = useCallback(async () => {
+    if (!finalSpoken) return;
+    try {
+      await navigator.clipboard.writeText(finalSpoken);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setError("não foi possível copiar o texto");
+    }
+  }, [finalSpoken]);
+
   const playAudio = useCallback(async () => {
     if (!audioBase64) return;
     stopPlayback();
@@ -436,6 +462,46 @@ export function ComposeDesk({ propertyLabel, contactName }: Props) {
             >
               {approved ? "Aprovado" : "Aprovar texto e áudio"}
             </button>
+          </div>
+        </aside>
+      ) : null}
+
+      {approved && audioBase64 ? (
+        <aside className="rounded-lg border border-emerald-300 bg-emerald-50 p-4 text-sm dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-100">
+          <h2 className="font-medium">Entrega manual</h2>
+          <p className="mt-2 text-neutral-700 dark:text-neutral-300">
+            O link do WhatsApp abre o texto. Ele não anexa áudio. Baixe o WAV
+            e cole na conversa que o proprietário já abriu. Nota de voz nativa
+            (Ogg/Opus) é o caminho da Cloud API, depois do hackathon.
+          </p>
+          {seeded ? (
+            <p className="mt-2 text-amber-900 dark:text-amber-200">
+              Número semeado ({contactPhoneE164}). Não é um envio real.
+            </p>
+          ) : null}
+          <div className="mt-3 flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={downloadAudio}
+              className="rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white dark:bg-neutral-100 dark:text-neutral-900"
+            >
+              Baixar WAV
+            </button>
+            <button
+              type="button"
+              onClick={() => void copyNote()}
+              className="rounded-lg border border-neutral-300 px-4 py-2 text-sm dark:border-neutral-700"
+            >
+              {copied ? "Texto copiado" : "Copiar texto"}
+            </button>
+            <a
+              href={waMeUrl(contactPhoneE164, finalSpoken)}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-lg border border-neutral-300 px-4 py-2 text-sm dark:border-neutral-700"
+            >
+              Abrir WhatsApp
+            </a>
           </div>
         </aside>
       ) : null}

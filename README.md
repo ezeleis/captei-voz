@@ -38,8 +38,9 @@ Composed-note TTS runs in the browser (token from our server, greeting
 verbatim). That is what lets the demo live on Vercel Hobby without a 10 s
 serverless timeout.
 
-Greeting-length test for long notes, Opus download / `wa.me`, and the pitch
-pack (video, deck, description) are still open.
+After approve, compose offers WAV download, copy, and `wa.me` (text only —
+WhatsApp cannot attach audio via URL). Demo script: `docs/DEMO-SCRIPT.md`.
+Pitch pack (video, deck, description) is still open.
 
 Analysis: `docs/bmad/` — `product-brief.md`, `stress-test.md`, `recommended-mvp.md`.
 Legal rails: `docs/IDEA-LOCK.md` and `C:\Users\Admin\Projects\CRM\docs\captacao\`.
