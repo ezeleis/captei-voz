@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { PcmPlayer } from "@/lib/audio/play-pcm";
+import { renderVerbatimInBrowser } from "@/lib/audio/render-verbatim-browser";
+import { QUALIFY_VOICE_ID } from "@/lib/assemblyai/qualify-config";
 import { assembleFinalNote, type CorretorIdentity } from "@/lib/disclosure";
 import {
   NOTE_LANG_LABEL,
@@ -234,21 +236,9 @@ export function ComposeDesk({ propertyLabel, contactName }: Props) {
     setRenderState("rendering");
     setError(null);
     try {
-      const response = await fetch("/api/render", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: finalSpoken }),
-      });
-      const body = (await response.json()) as {
-        audio?: string;
-        durationMs?: number;
-        error?: string;
-      };
-      if (!response.ok || !body.audio) {
-        throw new Error(body.error ?? "falha ao gerar o áudio");
-      }
+      const body = await renderVerbatimInBrowser(finalSpoken, QUALIFY_VOICE_ID);
       setAudioBase64(body.audio);
-      setAudioDurationMs(body.durationMs ?? null);
+      setAudioDurationMs(body.durationMs);
       setRenderState("ready");
     } catch (err) {
       setRenderState("idle");

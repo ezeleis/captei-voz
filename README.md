@@ -1,9 +1,8 @@
 # Captei Voz
 
 **Status:** idea locked 2026-09-08, stress-tested and amended the same day.
-Amendments A1–A4 approved — see `docs/bmad/stress-test.md`. Skeleton and live
-qualify screen are in the repo; composed-note TTS still waits on the listen
-test.
+Amendments A1–A4 approved — see `docs/bmad/stress-test.md`. Live qualify and
+compose-desk TTS are in the repo.
 
 AssemblyAI Voice Agent Hackathon (lablab, 1–30 Sep 2026) slice of Captei.  
 Not Truquipoker. Not Connect IA / MucoCreate. Not cold WhatsApp captacão.
@@ -31,12 +30,16 @@ Live qualify is working (`/qualify/demo`). Compose desk is at `/compose/demo`
 — speak, rewrite in the owner language, render verbatim audio with `rafael`,
 approve. Playback uses the continuous worklet on one AudioContext.
 
-Greeting-length test for long notes is still open. Opus encode / download
-handoff is next after that.
-
 Need `ASSEMBLYAI_API_KEY` plus `CORRETOR_FULL_NAME` and `CORRETOR_CRECI` in
-`.env.local`. Restart `npm run dev` after changing env. No quotes unless the
-value has spaces.
+`.env.local` (and the same names on Vercel). Restart `npm run dev` after
+changing env. No quotes unless the value has spaces.
+
+Composed-note TTS runs in the browser (token from our server, greeting
+verbatim). That is what lets the demo live on Vercel Hobby without a 10 s
+serverless timeout.
+
+Greeting-length test for long notes, Opus download / `wa.me`, and the pitch
+pack (video, deck, description) are still open.
 
 Analysis: `docs/bmad/` — `product-brief.md`, `stress-test.md`, `recommended-mvp.md`.
 Legal rails: `docs/IDEA-LOCK.md` and `C:\Users\Admin\Projects\CRM\docs\captacao\`.

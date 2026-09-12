@@ -2,6 +2,8 @@ import Link from "next/link";
 
 import { isConfigured } from "@/lib/env";
 
+export const dynamic = "force-dynamic";
+
 /**
  * Landing / status page.
  *

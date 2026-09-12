@@ -5,8 +5,7 @@ import { DEMO_CONTACT_ID, DEMO_PROPERTY, DEMO_PROPERTY_ID } from "@/lib/consent/
 import { resolveReachableContact } from "@/lib/consent/gate";
 
 /**
- * Screen 1 — compose desk. Text first (build step 4).
- * Audio render waits on the greeting-length test.
+ * Screen 1 — compose desk. Rewrite on the server, verbatim TTS in the browser.
  */
 export default async function ComposePage({
   params,
