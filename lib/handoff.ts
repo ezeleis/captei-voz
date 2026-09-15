@@ -17,7 +17,7 @@ export function waMeUrl(phoneE164: string, text: string): string {
   return url.toString();
 }
 
-export function wavFilename(contactName: string): string {
+export function wavFilename(contactName: string, lang?: string): string {
   const slug = contactName
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
@@ -25,5 +25,6 @@ export function wavFilename(contactName: string): string {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "")
     .slice(0, 40);
-  return `recado-${slug || "proprietario"}.wav`;
+  const tag = lang ? `${lang}-` : "";
+  return `recado-${tag}${slug || "proprietario"}.wav`;
 }

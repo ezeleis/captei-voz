@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { SiteHeader } from "@/app/components/SiteHeader";
 import { isConfigured } from "@/lib/env";
 
 export const dynamic = "force-dynamic";
@@ -20,65 +21,88 @@ export default function Home() {
   ];
 
   return (
-    <main className="mx-auto max-w-2xl px-6 py-16">
-      <h1 className="text-3xl font-semibold tracking-tight">Captei Voz</h1>
-      <p className="mt-3 text-neutral-600 dark:text-neutral-400">
-        O corretor fala rápido. Captei Voz devolve um áudio profissional no
-        idioma do proprietário — que ele <strong>aprova</strong> antes de
-        qualquer envio.
-      </p>
-
-      <nav className="mt-10 grid gap-3">
-        <Link
-          href="/qualify/demo"
-          className="rounded-lg border border-neutral-300 p-4 hover:bg-white dark:border-neutral-700 dark:hover:bg-neutral-900"
-        >
-          <span className="font-medium">Qualificação ao vivo</span>
-          <span className="mt-1 block text-sm text-neutral-600 dark:text-neutral-400">
-            Sessão de voz com proprietário que já pediu avaliação. Construído
-            primeiro — é o agente de voz de verdade.
-          </span>
-        </Link>
-        <Link
-          href="/compose/demo"
-          className="rounded-lg border border-neutral-300 p-4 hover:bg-white dark:border-neutral-700 dark:hover:bg-neutral-900"
-        >
-          <span className="font-medium">Mesa de composição</span>
-          <span className="mt-1 block text-sm text-neutral-600 dark:text-neutral-400">
-            Fale em PT, ES ou EN. O recado sai no idioma do cliente. Revise e
-            aprove.
-          </span>
-        </Link>
-      </nav>
-
-      <section className="mt-12">
-        <h2 className="text-sm font-medium uppercase tracking-wide text-neutral-500">
-          Configuração
-        </h2>
-        <ul className="mt-3 space-y-1 text-sm">
-          {checks.map((check) => (
-            <li key={check.name} className="flex items-center gap-2">
-              <span
-                aria-hidden
-                className={`inline-block h-2 w-2 rounded-full ${check.ok ? "bg-emerald-600" : "bg-neutral-400"}`}
-              />
-              <code className="text-neutral-700 dark:text-neutral-300">
-                {check.name}
-              </code>
-              <span className="text-neutral-500">
-                {check.ok
-                  ? "configurado"
-                  : "optional" in check && check.optional
-                    ? "opcional — não configurado"
-                    : "não configurado"}
-              </span>
-            </li>
-          ))}
-        </ul>
-        <p className="mt-3 text-xs text-neutral-500">
-          Valores nunca são exibidos. A chave da API não sai do servidor.
+    <div className="flex min-h-screen flex-col">
+      <SiteHeader current="home" />
+      <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-14 sm:py-20">
+        <p className="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-tide">
+          Mesa do corretor · AssemblyAI Voice Agent
         </p>
-      </section>
-    </main>
+        <h1 className="font-display mt-4 max-w-3xl text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
+          O corretor fala rápido. O proprietário ouve no idioma dele.
+        </h1>
+        <p className="mt-5 max-w-2xl text-lg leading-relaxed text-ink-muted">
+          Captei Voz devolve um áudio profissional — com identificação CRECI e
+          aviso de voz digital — que o corretor{" "}
+          <strong className="font-semibold text-ink">aprova</strong> antes de
+          qualquer entrega. Nada é enviado por um bot.
+        </p>
+
+        <nav className="mt-12 grid gap-4 md:grid-cols-2">
+          <Link
+            href="/qualify/demo"
+            className="group rounded-2xl border border-line bg-foam p-6 shadow-[0_1px_0_rgb(26_60_58_/_0.04)] transition hover:-translate-y-0.5 hover:border-tide/40 hover:shadow-md"
+          >
+            <span className="text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-clay">
+              01 · Headline
+            </span>
+            <span className="mt-3 block font-display text-2xl font-semibold text-ink">
+              Qualificação ao vivo
+            </span>
+            <span className="mt-2 block text-[0.95rem] leading-relaxed text-ink-muted">
+              Agente de voz com o proprietário que já pediu avaliação. Turnos,
+              barge-in e registro no desk — o que o júri precisa ver primeiro.
+            </span>
+            <span className="mt-5 inline-block text-sm font-semibold text-tide group-hover:text-ink">
+              Iniciar sessão →
+            </span>
+          </Link>
+          <Link
+            href="/compose/demo"
+            className="group rounded-2xl border border-line bg-foam p-6 shadow-[0_1px_0_rgb(26_60_58_/_0.04)] transition hover:-translate-y-0.5 hover:border-tide/40 hover:shadow-md"
+          >
+            <span className="text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-tide">
+              02 · Desk
+            </span>
+            <span className="mt-3 block font-display text-2xl font-semibold text-ink">
+              Mesa de composição
+            </span>
+            <span className="mt-2 block text-[0.95rem] leading-relaxed text-ink-muted">
+              Fale em PT, ES ou EN. O recado sai no idioma do cliente, na voz
+              de estoque desse idioma. Revise, ouça, aprove.
+            </span>
+            <span className="mt-5 inline-block text-sm font-semibold text-tide group-hover:text-ink">
+              Abrir mesa →
+            </span>
+          </Link>
+        </nav>
+
+        <section className="mt-16 rounded-2xl border border-line bg-sand/50 p-6">
+          <h2 className="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-ink-muted">
+            Configuração
+          </h2>
+          <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+            {checks.map((check) => (
+              <li key={check.name} className="flex items-center gap-2 text-sm">
+                <span
+                  aria-hidden
+                  className={`inline-block h-2 w-2 rounded-full ${check.ok ? "bg-moss" : "bg-line"}`}
+                />
+                <code className="text-ink">{check.name}</code>
+                <span className="text-ink-muted">
+                  {check.ok
+                    ? "configurado"
+                    : "optional" in check && check.optional
+                      ? "opcional"
+                      : "falta"}
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-4 text-xs text-ink-muted">
+            Valores nunca são exibidos. A chave da API não sai do servidor.
+          </p>
+        </section>
+      </main>
+    </div>
   );
 }

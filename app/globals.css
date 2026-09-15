@@ -1,14 +1,53 @@
 @import "tailwindcss";
 
-:root {
-  color-scheme: light dark;
+@theme {
+  --font-display: var(--font-fraunces), "Palatino Linotype", Palatino, serif;
+  --font-sans: var(--font-source), ui-sans-serif, system-ui, sans-serif;
+
+  --color-paper: #f4efe6;
+  --color-foam: #faf7f2;
+  --color-sand: #e8dfd2;
+  --color-line: #d9d0c3;
+  --color-ink: #1a3c3a;
+  --color-ink-muted: #4a6563;
+  --color-tide: #2f6f6a;
+  --color-clay: #c45c26;
+  --color-clay-hover: #a84c1e;
+  --color-moss: #2f6b4f;
+  --color-moss-bg: #e4efe6;
+  --color-warn: #8a5a12;
+  --color-warn-bg: #f6e8c8;
+  --color-danger: #8b2e2e;
+  --color-danger-bg: #f4d6d2;
+}
+
+html {
+  color-scheme: light;
 }
 
 body {
-  font-family:
-    ui-sans-serif,
-    system-ui,
-    -apple-system,
-    "Segoe UI",
-    sans-serif;
+  background-color: var(--color-paper);
+  background-image:
+    radial-gradient(1100px 520px at 8% -12%, rgb(47 111 106 / 0.1), transparent 58%),
+    radial-gradient(720px 380px at 100% 0%, rgb(196 92 38 / 0.08), transparent 52%);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+@keyframes listen-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(196 92 38 / 0.45);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgb(196 92 38 / 0);
+  }
+}
+
+.listen-pulse {
+  animation: listen-pulse 1.6s ease-out infinite;
 }

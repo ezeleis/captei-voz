@@ -27,8 +27,9 @@ Hero 2 gets built first. It is the one that reads as a *voice agent* rather than
 ## Next
 
 Live qualify is working (`/qualify/demo`). Compose desk is at `/compose/demo`
-— speak, rewrite in the owner language, render verbatim audio with `rafael`,
-approve. Playback uses the continuous worklet on one AudioContext.
+— speak, rewrite in the owner language, render verbatim audio with the stock
+voice for that language (`rafael` PT, `lola` ES, `michael` EN), approve.
+Playback uses the continuous worklet on one AudioContext.
 
 Need `ASSEMBLYAI_API_KEY` plus `CORRETOR_FULL_NAME` and `CORRETOR_CRECI` in
 `.env.local` (and the same names on Vercel). Restart `npm run dev` after

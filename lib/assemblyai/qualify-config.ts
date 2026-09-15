@@ -8,6 +8,7 @@ import type { CorretorIdentity } from "@/lib/disclosure";
  * file is only the source of the client-side tool schema.
  *
  * Voice: rafael. Docs list European; listen test 2026-09-09 sounded Brazilian.
+ * Compose uses language-matched stock voices in lib/assemblyai/voices.ts.
  */
 
 export const QUALIFY_VOICE_ID = "rafael";

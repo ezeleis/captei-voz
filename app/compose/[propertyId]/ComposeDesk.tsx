@@ -5,7 +5,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { PcmPlayer } from "@/lib/audio/play-pcm";
 import { downloadWav, pcm16LeBase64ToWavBlob } from "@/lib/audio/pcm-to-wav";
 import { renderVerbatimInBrowser } from "@/lib/audio/render-verbatim-browser";
-import { QUALIFY_VOICE_ID } from "@/lib/assemblyai/qualify-config";
+import {
+  COMPOSE_VOICE_LABEL,
+  voiceForNoteLang,
+} from "@/lib/assemblyai/voices";
 import { assembleFinalNote, type CorretorIdentity } from "@/lib/disclosure";
 import { waMeUrl, wavFilename } from "@/lib/handoff";
 import {
@@ -246,7 +249,10 @@ export function ComposeDesk({
     setRenderState("rendering");
     setError(null);
     try {
-      const body = await renderVerbatimInBrowser(finalSpoken, QUALIFY_VOICE_ID);
+      const body = await renderVerbatimInBrowser(
+        finalSpoken,
+        voiceForNoteLang(noteLang),
+      );
       setAudioBase64(body.audio);
       setAudioDurationMs(body.durationMs);
       setRenderState("ready");
@@ -254,12 +260,15 @@ export function ComposeDesk({
       setRenderState("idle");
       setError(err instanceof Error ? err.message : "falha ao gerar o áudio");
     }
-  }, [finalSpoken, stopPlayback]);
+  }, [finalSpoken, noteLang, stopPlayback]);
 
   const downloadAudio = useCallback(() => {
     if (!audioBase64) return;
-    downloadWav(pcm16LeBase64ToWavBlob(audioBase64), wavFilename(contactName));
-  }, [audioBase64, contactName]);
+    downloadWav(
+      pcm16LeBase64ToWavBlob(audioBase64),
+      wavFilename(contactName, noteLang),
+    );
+  }, [audioBase64, contactName, noteLang]);
 
   const copyNote = useCallback(async () => {
     if (!finalSpoken) return;
@@ -300,27 +309,27 @@ export function ComposeDesk({
     };
   }, [cleanup, stopPlayback]);
 
+  const spokenVoice = COMPOSE_VOICE_LABEL[noteLang];
+
   return (
     <section className="mt-8 space-y-6">
-      <p className="text-sm text-neutral-600 dark:text-neutral-400">
-        Destino: <strong>{contactName}</strong> · Imóvel: {propertyLabel}
+      <p className="text-sm text-ink-muted">
+        Destino: <strong className="text-ink">{contactName}</strong>
+        <span className="mx-2 text-line">·</span>
+        Imóvel: {propertyLabel}
       </p>
 
-      <div className="space-y-3">
+      <div className="space-y-4 rounded-2xl border border-line bg-foam p-4 sm:p-5">
         <fieldset className="flex flex-wrap items-center gap-2 text-sm">
           <legend className="sr-only">Idioma que você vai falar</legend>
-          <span className="text-neutral-500">Vou falar em</span>
+          <span className="w-28 shrink-0 text-ink-muted">Vou falar em</span>
           {NOTE_LANGS.map((code) => (
             <button
               key={code}
               type="button"
               disabled={state === "listening" || state === "rewriting"}
               onClick={() => setInputLang(code)}
-              className={`rounded-full border px-3 py-1 ${
-                inputLang === code
-                  ? "border-neutral-900 bg-neutral-900 text-white dark:border-neutral-100 dark:bg-neutral-100 dark:text-neutral-900"
-                  : "border-neutral-300 dark:border-neutral-700"
-              }`}
+              className={langChip(inputLang === code)}
             >
               {NOTE_LANG_LABEL[code]}
             </button>
@@ -328,23 +337,26 @@ export function ComposeDesk({
         </fieldset>
         <fieldset className="flex flex-wrap items-center gap-2 text-sm">
           <legend className="sr-only">Idioma do recado para o proprietário</legend>
-          <span className="text-neutral-500">Recado em</span>
+          <span className="w-28 shrink-0 text-ink-muted">Recado em</span>
           {NOTE_LANGS.map((code) => (
             <button
               key={code}
               type="button"
               disabled={state === "listening" || state === "rewriting"}
               onClick={() => setOutputLang(code)}
-              className={`rounded-full border px-3 py-1 ${
-                outputLang === code
-                  ? "border-neutral-900 bg-neutral-900 text-white dark:border-neutral-100 dark:bg-neutral-100 dark:text-neutral-900"
-                  : "border-neutral-300 dark:border-neutral-700"
-              }`}
+              className={langChip(outputLang === code)}
             >
               {NOTE_LANG_LABEL[code]}
             </button>
           ))}
         </fieldset>
+        <p className="text-xs text-ink-muted">
+          Texto e WAV usam a voz de estoque do recado:{" "}
+          <code className="text-ink">{COMPOSE_VOICE_LABEL[outputLang]}</code>
+          {rewritten && outputLang !== noteLang
+            ? ` — o recado atual ainda está em ${NOTE_LANG_LABEL[noteLang]} (${spokenVoice}). Reescreva para trocar.`
+            : null}
+        </p>
       </div>
 
       <div className="flex flex-wrap gap-3">
@@ -352,7 +364,7 @@ export function ComposeDesk({
           <button
             type="button"
             onClick={() => void stopListening()}
-            className="rounded-lg bg-red-700 px-4 py-2 text-sm font-medium text-white"
+            className="listen-pulse rounded-xl bg-danger px-4 py-2.5 text-sm font-semibold text-foam"
           >
             Parar e reescrever
           </button>
@@ -361,7 +373,7 @@ export function ComposeDesk({
             type="button"
             onClick={() => void startListening()}
             disabled={state === "rewriting"}
-            className="rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-40 dark:bg-neutral-100 dark:text-neutral-900"
+            className="rounded-xl bg-clay px-4 py-2.5 text-sm font-semibold text-foam shadow-sm transition hover:bg-clay-hover disabled:opacity-40"
           >
             {state === "rewriting" ? "Reescrevendo…" : "Falar rascunho"}
           </button>
@@ -371,7 +383,7 @@ export function ComposeDesk({
             type="button"
             onClick={() => void rewriteTranscript(raw)}
             disabled={state === "rewriting"}
-            className="rounded-lg border border-neutral-300 px-4 py-2 text-sm disabled:opacity-40 dark:border-neutral-700"
+            className="rounded-xl border border-line bg-foam px-4 py-2.5 text-sm font-medium text-ink transition hover:border-tide disabled:opacity-40"
           >
             Reescrever em {NOTE_LANG_LABEL[outputLang]}
           </button>
@@ -379,26 +391,33 @@ export function ComposeDesk({
       </div>
 
       {state === "listening" ? (
-        <p className="text-sm text-neutral-500">Ouvindo… {live || "—"}</p>
+        <p className="rounded-xl border border-clay/20 bg-sand px-4 py-3 text-sm text-ink">
+          <span className="font-semibold text-clay">Ouvindo…</span>{" "}
+          {live || "—"}
+        </p>
       ) : null}
 
       {error ? (
-        <p className="rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-200">
+        <p className="rounded-2xl border border-danger/25 bg-danger-bg p-3 text-sm text-danger">
           {error}
         </p>
       ) : null}
 
       {raw ? (
         <div className="grid gap-4 md:grid-cols-2">
-          <article className="rounded-lg border border-neutral-300 p-4 text-sm dark:border-neutral-700">
-            <h2 className="font-medium">Original</h2>
-            <p className="mt-2 whitespace-pre-wrap">{raw}</p>
+          <article className="rounded-2xl border border-line bg-foam p-4 text-sm">
+            <h2 className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-ink-muted">
+              Original
+            </h2>
+            <p className="mt-2 whitespace-pre-wrap leading-relaxed">{raw}</p>
           </article>
-          <article className="rounded-lg border border-neutral-300 p-4 text-sm dark:border-neutral-700">
-            <h2 className="font-medium">Reescrito</h2>
+          <article className="rounded-2xl border border-line bg-foam p-4 text-sm">
+            <h2 className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-ink-muted">
+              Reescrito · {NOTE_LANG_LABEL[noteLang]}
+            </h2>
             {rewritten ? (
               <textarea
-                className="mt-2 w-full resize-y rounded border border-neutral-300 bg-transparent p-2 dark:border-neutral-700"
+                className="mt-2 w-full resize-y rounded-xl border border-line bg-paper p-3 leading-relaxed text-ink outline-none focus:border-tide"
                 rows={8}
                 value={rewritten}
                 onChange={(event) => {
@@ -410,35 +429,38 @@ export function ComposeDesk({
                 }}
               />
             ) : (
-              <p className="mt-2 text-neutral-500">Aguardando reescrita…</p>
+              <p className="mt-2 text-ink-muted">Aguardando reescrita…</p>
             )}
           </article>
         </div>
       ) : null}
 
       {finalSpoken && state === "ready" ? (
-        <aside className="rounded-lg border border-neutral-300 p-4 text-sm dark:border-neutral-700">
-          <h2 className="font-medium">Texto que será falado</h2>
+        <aside className="rounded-2xl border border-line bg-foam p-5 text-sm">
+          <h2 className="font-display text-lg font-semibold text-ink">
+            Texto que será falado
+          </h2>
           {!identity ? (
-            <p className="mt-2 text-amber-800 dark:text-amber-200">
+            <p className="mt-2 text-warn">
               Falta CORRETOR_FULL_NAME / CORRETOR_CRECI no .env.local — o bloco
               de identificação não foi anexado.
             </p>
           ) : null}
-          <p className="mt-2 whitespace-pre-wrap">{finalSpoken}</p>
-          <p className="mt-4 text-xs text-neutral-500">
-            O áudio é a voz <code>rafael</code>, palavra por palavra. A
-            síntese dura cerca do tempo do recado.
+          <p className="mt-3 whitespace-pre-wrap leading-relaxed">{finalSpoken}</p>
+          <p className="mt-4 text-xs text-ink-muted">
+            Síntese verbatim na voz{" "}
+            <code className="text-ink">{spokenVoice}</code>. Dura cerca do
+            tempo do recado.
             {audioDurationMs
               ? ` Último render: ${(audioDurationMs / 1000).toFixed(1)} s.`
               : ""}
           </p>
-          <div className="mt-3 flex flex-wrap gap-3">
+          <div className="mt-4 flex flex-wrap gap-3">
             <button
               type="button"
               onClick={() => void renderAudio()}
               disabled={renderState === "rendering"}
-              className="rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-40 dark:bg-neutral-100 dark:text-neutral-900"
+              className="rounded-xl bg-clay px-4 py-2.5 text-sm font-semibold text-foam shadow-sm transition hover:bg-clay-hover disabled:opacity-40"
             >
               {renderState === "rendering"
                 ? "Gerando áudio…"
@@ -450,7 +472,7 @@ export function ComposeDesk({
               type="button"
               onClick={() => void playAudio()}
               disabled={!audioBase64 || renderState === "rendering"}
-              className="rounded-lg border border-neutral-300 px-4 py-2 text-sm disabled:opacity-40 dark:border-neutral-700"
+              className="rounded-xl border border-line bg-paper px-4 py-2.5 text-sm font-medium text-ink disabled:opacity-40"
             >
               {renderState === "playing" ? "Tocando…" : "Ouvir"}
             </button>
@@ -458,7 +480,7 @@ export function ComposeDesk({
               type="button"
               onClick={() => setApproved(true)}
               disabled={!audioBase64}
-              className="rounded-lg border border-neutral-300 px-4 py-2 text-sm disabled:opacity-40 dark:border-neutral-700"
+              className="rounded-xl border border-line bg-paper px-4 py-2.5 text-sm font-medium text-ink disabled:opacity-40"
             >
               {approved ? "Aprovado" : "Aprovar texto e áudio"}
             </button>
@@ -467,30 +489,32 @@ export function ComposeDesk({
       ) : null}
 
       {approved && audioBase64 ? (
-        <aside className="rounded-lg border border-emerald-300 bg-emerald-50 p-4 text-sm dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-100">
-          <h2 className="font-medium">Entrega manual</h2>
-          <p className="mt-2 text-neutral-700 dark:text-neutral-300">
+        <aside className="rounded-2xl border border-moss/25 bg-moss-bg p-5 text-sm">
+          <h2 className="font-display text-lg font-semibold text-moss">
+            Entrega manual
+          </h2>
+          <p className="mt-2 text-ink">
             O link do WhatsApp abre o texto. Ele não anexa áudio. Baixe o WAV
             e cole na conversa que o proprietário já abriu. Nota de voz nativa
             (Ogg/Opus) é o caminho da Cloud API, depois do hackathon.
           </p>
           {seeded ? (
-            <p className="mt-2 text-amber-900 dark:text-amber-200">
+            <p className="mt-2 text-warn">
               Número semeado ({contactPhoneE164}). Não é um envio real.
             </p>
           ) : null}
-          <div className="mt-3 flex flex-wrap gap-3">
+          <div className="mt-4 flex flex-wrap gap-3">
             <button
               type="button"
               onClick={downloadAudio}
-              className="rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white dark:bg-neutral-100 dark:text-neutral-900"
+              className="rounded-xl bg-clay px-4 py-2.5 text-sm font-semibold text-foam shadow-sm transition hover:bg-clay-hover"
             >
               Baixar WAV
             </button>
             <button
               type="button"
               onClick={() => void copyNote()}
-              className="rounded-lg border border-neutral-300 px-4 py-2 text-sm dark:border-neutral-700"
+              className="rounded-xl border border-line bg-foam px-4 py-2.5 text-sm font-medium text-ink"
             >
               {copied ? "Texto copiado" : "Copiar texto"}
             </button>
@@ -498,7 +522,7 @@ export function ComposeDesk({
               href={waMeUrl(contactPhoneE164, finalSpoken)}
               target="_blank"
               rel="noreferrer"
-              className="rounded-lg border border-neutral-300 px-4 py-2 text-sm dark:border-neutral-700"
+              className="rounded-xl border border-line bg-foam px-4 py-2.5 text-sm font-medium text-ink"
             >
               Abrir WhatsApp
             </a>
@@ -507,4 +531,12 @@ export function ComposeDesk({
       ) : null}
     </section>
   );
+}
+
+function langChip(active: boolean): string {
+  return `rounded-full px-3 py-1 text-sm transition disabled:opacity-40 ${
+    active
+      ? "bg-ink text-foam"
+      : "border border-line bg-paper text-ink-muted hover:border-tide hover:text-ink"
+  }`;
 }

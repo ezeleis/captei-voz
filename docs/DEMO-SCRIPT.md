@@ -57,7 +57,8 @@ Speak ~15 seconds, facts only. Example:
 > janela aberta, posso passar amanhã de manhã pra medir.”
 
 Stop. Show original vs rewrite. Point at the spoken disclosure + CRECI block
-— not editable. **Gerar áudio**, **Ouvir**, **Aprovar**. Then **Baixar WAV**
+— not editable. Name the stock voice on screen (`lola` / `michael` / `rafael`
+matches **Recado em**). **Gerar áudio**, **Ouvir**, **Aprovar**. Then **Baixar WAV**
 and **Abrir WhatsApp**. Say this once:
 
 > WhatsApp cannot attach audio through a link. The broker downloads the file

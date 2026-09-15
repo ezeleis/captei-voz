@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 
-import { QUALIFY_VOICE_ID } from "@/lib/assemblyai/qualify-config";
 import { renderVerbatim } from "@/lib/assemblyai/render";
+import { voiceForNoteLang } from "@/lib/assemblyai/voices";
 import { containsForbiddenClaim } from "@/lib/disclosure";
 import { isConfigured } from "@/lib/env";
+import { isNoteLang } from "@/lib/note-lang";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -24,12 +25,15 @@ export async function POST(request: Request) {
     );
   }
 
-  let body: { text?: string };
+  let body: { text?: string; lang?: string };
   try {
     body = (await request.json()) as typeof body;
   } catch {
     return NextResponse.json({ error: "invalid json" }, { status: 400 });
   }
+
+  const lang = isNoteLang(body.lang) ? body.lang : "pt";
+  const voice = voiceForNoteLang(lang);
 
   const text = body.text?.trim();
   if (!text) {
@@ -51,7 +55,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const result = await renderVerbatim(text, QUALIFY_VOICE_ID);
+    const result = await renderVerbatim(text, voice);
     const durationMs = Math.round(
       (result.pcm.length / 2 / result.sampleRate) * 1000,
     );
@@ -59,7 +63,8 @@ export async function POST(request: Request) {
       audio: result.pcm.toString("base64"),
       sampleRate: result.sampleRate,
       durationMs,
-      voice: QUALIFY_VOICE_ID,
+      voice,
+      lang,
     });
   } catch (error) {
     console.error("render:", error);

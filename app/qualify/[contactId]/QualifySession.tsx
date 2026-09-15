@@ -283,17 +283,17 @@ export function QualifySession({ contactId, contactName }: Props) {
 
   return (
     <section className="mt-8 space-y-6">
-      <p className="text-sm text-neutral-600 dark:text-neutral-400">
-        Falando com <strong>{contactName}</strong>. Use Chrome ou Edge. Fones
-        ajudam se o eco cancelar mal.
+      <p className="text-sm text-ink-muted">
+        Falando com <strong className="text-ink">{contactName}</strong>. Use
+        Chrome ou Edge. Fones ajudam se o eco cancelar mal.
       </p>
 
-      <div className="flex gap-3">
+      <div className="flex flex-wrap items-center gap-3">
         <button
           type="button"
           onClick={() => void startSession()}
           disabled={state === "connecting" || state === "live" || state === "ending"}
-          className="rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-40 dark:bg-neutral-100 dark:text-neutral-900"
+          className="rounded-xl bg-clay px-4 py-2.5 text-sm font-semibold text-foam shadow-sm transition hover:bg-clay-hover disabled:opacity-40"
         >
           {state === "connecting" ? "Conectando…" : "Iniciar conversa"}
         </button>
@@ -301,35 +301,44 @@ export function QualifySession({ contactId, contactName }: Props) {
           type="button"
           onClick={endSession}
           disabled={state !== "live"}
-          className="rounded-lg border border-neutral-300 px-4 py-2 text-sm disabled:opacity-40 dark:border-neutral-700"
+          className="rounded-xl border border-line bg-foam px-4 py-2.5 text-sm font-medium text-ink disabled:opacity-40"
         >
           Encerrar
         </button>
+        <span
+          className={`rounded-full px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.16em] ${
+            state === "live"
+              ? "bg-moss-bg text-moss"
+              : state === "error"
+                ? "bg-danger-bg text-danger"
+                : "bg-sand text-ink-muted"
+          }`}
+        >
+          {state}
+        </span>
       </div>
 
-      <p className="text-xs uppercase tracking-wide text-neutral-500">
-        Estado: {state}
-      </p>
-
       {error ? (
-        <p className="rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-200">
+        <p className="rounded-2xl border border-danger/25 bg-danger-bg p-3 text-sm text-danger">
           {error}
         </p>
       ) : null}
 
       {qualification ? (
-        <aside className="rounded-lg border border-neutral-300 p-4 text-sm dark:border-neutral-700">
-          <h2 className="font-medium">Qualificação gravada</h2>
-          <dl className="mt-2 grid grid-cols-[8rem_1fr] gap-y-1">
-            <dt className="text-neutral-500">Endereço</dt>
+        <aside className="rounded-2xl border border-moss/25 bg-moss-bg p-5 text-sm">
+          <h2 className="font-display text-lg font-semibold text-moss">
+            Qualificação gravada
+          </h2>
+          <dl className="mt-3 grid grid-cols-[7.5rem_1fr] gap-y-1.5">
+            <dt className="text-ink-muted">Endereço</dt>
             <dd>{qualification.endereco}</dd>
-            <dt className="text-neutral-500">Tipo</dt>
+            <dt className="text-ink-muted">Tipo</dt>
             <dd>{qualification.tipo_imovel}</dd>
-            <dt className="text-neutral-500">Finalidade</dt>
+            <dt className="text-ink-muted">Finalidade</dt>
             <dd>{qualification.finalidade}</dd>
             {qualification.prazo ? (
               <>
-                <dt className="text-neutral-500">Prazo</dt>
+                <dt className="text-ink-muted">Prazo</dt>
                 <dd>{qualification.prazo}</dd>
               </>
             ) : null}
@@ -337,20 +346,32 @@ export function QualifySession({ contactId, contactName }: Props) {
         </aside>
       ) : null}
 
-      <ol className="space-y-2 text-sm">
-        {log.map((line) => (
-          <li key={line.id}>
-            <span className="text-neutral-500">
-              {line.role === "user"
-                ? "Proprietário"
-                : line.role === "agent"
-                  ? "Agente"
-                  : "Sistema"}
-              :{" "}
-            </span>
-            {line.text}
-          </li>
-        ))}
+      <ol className="space-y-3">
+        {log.map((line) => {
+          const isAgent = line.role === "agent";
+          const isUser = line.role === "user";
+          return (
+            <li
+              key={line.id}
+              className={`max-w-[92%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+                isAgent
+                  ? "bg-ink text-foam"
+                  : isUser
+                    ? "ml-auto bg-foam border border-line text-ink"
+                    : "bg-sand text-ink-muted"
+              }`}
+            >
+              <span
+                className={`block text-[0.65rem] font-semibold uppercase tracking-[0.16em] ${
+                  isAgent ? "text-sand/80" : "text-ink-muted"
+                }`}
+              >
+                {isUser ? "Proprietário" : isAgent ? "Agente" : "Sistema"}
+              </span>
+              <span className="mt-1 block">{line.text}</span>
+            </li>
+          );
+        })}
       </ol>
     </section>
   );
