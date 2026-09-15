@@ -20,7 +20,7 @@ const MAX_CHARS = 2000;
 export async function POST(request: Request) {
   if (!isConfigured("ASSEMBLYAI_API_KEY")) {
     return NextResponse.json(
-      { error: "ASSEMBLYAI_API_KEY não configurada no servidor." },
+      { error: "Serviço de voz indisponível no momento." },
       { status: 503 },
     );
   }

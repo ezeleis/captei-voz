@@ -9,9 +9,8 @@ import type { NoteLang } from "@/lib/note-lang";
  * accented English. Catalog (2026-09-14):
  * https://www.assemblyai.com/docs/voice-agents/voice-agent-api/voices
  *
- * Qualify stays on QUALIFY_VOICE_ID (`rafael`). This map is compose-only.
- * `lola` is the only Spanish voice and is female — gender cannot match
- * `rafael`. That is a catalog limit, not a product choice.
+ * Used by compose TTS and live qualify. `lola` is the only Spanish voice
+ * and is female — gender cannot match `rafael`. Catalog limit, not a choice.
  */
 
 export const COMPOSE_VOICE_BY_LANG: Record<NoteLang, string> = {

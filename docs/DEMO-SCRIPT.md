@@ -31,19 +31,18 @@ Nothing is sent by a bot.
 
 ## 0:45–2:15 — Screen 2: qualify (headline)
 
-Open `/qualify/demo`. Say the amber banner out loud: this contact is **seeded**.
-The CRM does not exist yet. We show that on purpose.
+Open `/qualify/demo`. Pick **Conversar em** Português (or English on camera if
+that is clearer). Click **Iniciar conversa**. Wait for the greeting (AI
+disclosure + CRECI).
 
-Click **Iniciar conversa**. Wait for the greeting (AI disclosure + CRECI).
-
-Owner lines (you, second voice or a second take):
+Owner lines (you, second voice or a second take) — match the language you picked:
 
 - “Sim, é o apartamento na Virgílio Várzea.”
 - “Apartamento, uns cinquenta metros.”
 - “Quero vender, sem pressa.”
 - “Acho que uns oitocentos mil, mas o corretor que vê.”
 
-Show the tool write-back (`registrar_qualificacao`) on screen. Encerrar.
+Show the qualification card on screen. Encerrar.
 One sentence: barge-in works; the agent does not invent a price.
 
 ## 2:15–3:25 — Screen 1: compose + handoff
@@ -91,8 +90,8 @@ Voice Agent, LLM Gateway).
 
 | Time | Shot |
 |---|---|
-| 0:00 | Homepage, config dots green for API key + CRECI |
-| 0:45 | Qualify banner + Iniciar |
+| 0:00 | Homepage, two desk cards |
+| 0:45 | Qualify language picker + Iniciar |
 | 1:10 | Headset, greeting audio |
 | 1:40 | Transcript + qualification card |
 | 2:15 | Compose language pickers |

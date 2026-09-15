@@ -21,13 +21,13 @@ export const DEMO_PROPERTY_ID = "demo";
 
 export const DEMO_PROPERTY = {
   id: DEMO_PROPERTY_ID,
-  label: "Apto. 50 m² — Rodovia Virgílio Várzea (demonstração)",
+  label: "Apto. 50 m² — Rodovia Virgílio Várzea",
   neighbourhood: "Saco Grande",
 } as const;
 
 export const DEMO_CONTACT_ROW = {
   id: DEMO_CONTACT_ID,
-  fullName: "Maria Souza (dados de demonstração)",
+  fullName: "Maria Souza",
   phoneE164: "+5548999990000",
   consentSource: "avaliacao_form_seeded",
   consentAt: new Date("2026-09-01T12:00:00.000Z"),

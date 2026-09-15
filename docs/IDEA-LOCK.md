@@ -13,8 +13,8 @@ Confirmed in the Truquipoker/Shipaton close-out chat.
 | Track A | “Quanto vale o meu imóvel?” + explicit opt-in → only path for automated cadence. **The form terminates in a Click-to-WhatsApp handoff so the owner initiates, opening Meta’s 72-hour Free Entry Point window** |
 | Track B | Public-signal worklist → human first contact (call / portal form). No WhatsApp automation. **No voice note, ever, by any mechanism** |
 | Compose desk | Corretor speech (ES/EN/PT) → professional PT-BR (or owner language) text + audio → approve → **deliver only inside an open, owner-initiated WhatsApp window. Never as first contact.** In the hackathon MVP delivery is a manual handoff (download or `wa.me`); no automated sender is built |
-| Live qualify | AssemblyAI Voice Agent after consent exists |
-| Clone | Out of hackathon. ElevenLabs + corretor consent later. Hackathon uses **stock** Voice Agent voices matched to language: **`rafael`** (PT — live qualify and Portuguese compose), **`lola`** (ES compose), **`michael`** (EN compose, US). Docs list `rafael` as 🇵🇹; **listen test 2026-09-09 (project owner, Brazilian ear): sounded Brazilian, not European.** Never claim “soa como você” on a stock voice. |
+| Live qualify | AssemblyAI Voice Agent after consent exists. Owner language is selected on the desk (PT / ES / EN); greeting, STT `language_codes`, system prompt and stock voice match that pick |
+| Clone | Out of hackathon. ElevenLabs + corretor consent later. Hackathon uses **stock** Voice Agent voices matched to language: **`rafael`** (PT), **`lola`** (ES), **`michael`** (EN, US) — compose and live qualify. Docs list `rafael` as 🇵🇹; **listen test 2026-09-09 (project owner, Brazilian ear): sounded Brazilian, not European.** Never claim “soa como você” on a stock voice. |
 | Disclosure | Every composed note discloses synthetic voice **in the audio itself**, carries the corretor’s full name and CRECI number in a **non-editable** block, and offers a human-reply affordance. Approvals logged with timestamps, retained 5 years. **“Soa como você” is never used for a stock voice** |
 
 **Why “send” became “deliver in an open window”.** AUDIO is not a supported

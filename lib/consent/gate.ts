@@ -56,8 +56,7 @@ export async function resolveReachableContact(
     return {
       ok: false,
       code: "not_found",
-      reason:
-        "Banco não configurado. Use o contato de demonstração em /qualify/demo.",
+      reason: "Contato não encontrado.",
     };
   }
 

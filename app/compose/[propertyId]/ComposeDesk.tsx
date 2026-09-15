@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { langChipClass } from "@/app/components/langChip";
 import { PcmPlayer } from "@/lib/audio/play-pcm";
 import { downloadWav, pcm16LeBase64ToWavBlob } from "@/lib/audio/pcm-to-wav";
 import { renderVerbatimInBrowser } from "@/lib/audio/render-verbatim-browser";
@@ -24,14 +25,12 @@ type Props = {
   propertyLabel: string;
   contactName: string;
   contactPhoneE164: string;
-  seeded?: boolean;
 };
 
 export function ComposeDesk({
   propertyLabel,
   contactName,
   contactPhoneE164,
-  seeded = false,
 }: Props) {
   const [state, setState] = useState<DeskState>("idle");
   const [inputLang, setInputLang] = useState<NoteLang>("pt");
@@ -329,7 +328,7 @@ export function ComposeDesk({
               type="button"
               disabled={state === "listening" || state === "rewriting"}
               onClick={() => setInputLang(code)}
-              className={langChip(inputLang === code)}
+              className={langChipClass(inputLang === code)}
             >
               {NOTE_LANG_LABEL[code]}
             </button>
@@ -344,7 +343,7 @@ export function ComposeDesk({
               type="button"
               disabled={state === "listening" || state === "rewriting"}
               onClick={() => setOutputLang(code)}
-              className={langChip(outputLang === code)}
+              className={langChipClass(outputLang === code)}
             >
               {NOTE_LANG_LABEL[code]}
             </button>
@@ -440,17 +439,9 @@ export function ComposeDesk({
           <h2 className="font-display text-lg font-semibold text-ink">
             Texto que será falado
           </h2>
-          {!identity ? (
-            <p className="mt-2 text-warn">
-              Falta CORRETOR_FULL_NAME / CORRETOR_CRECI no .env.local — o bloco
-              de identificação não foi anexado.
-            </p>
-          ) : null}
           <p className="mt-3 whitespace-pre-wrap leading-relaxed">{finalSpoken}</p>
           <p className="mt-4 text-xs text-ink-muted">
-            Síntese verbatim na voz{" "}
-            <code className="text-ink">{spokenVoice}</code>. Dura cerca do
-            tempo do recado.
+            Áudio na voz {spokenVoice}, palavra por palavra.
             {audioDurationMs
               ? ` Último render: ${(audioDurationMs / 1000).toFixed(1)} s.`
               : ""}
@@ -494,15 +485,9 @@ export function ComposeDesk({
             Entrega manual
           </h2>
           <p className="mt-2 text-ink">
-            O link do WhatsApp abre o texto. Ele não anexa áudio. Baixe o WAV
-            e cole na conversa que o proprietário já abriu. Nota de voz nativa
-            (Ogg/Opus) é o caminho da Cloud API, depois do hackathon.
+            O WhatsApp abre o texto; o áudio não vai no link. Baixe o WAV e
+            envie na conversa que o proprietário já abriu.
           </p>
-          {seeded ? (
-            <p className="mt-2 text-warn">
-              Número semeado ({contactPhoneE164}). Não é um envio real.
-            </p>
-          ) : null}
           <div className="mt-4 flex flex-wrap gap-3">
             <button
               type="button"
@@ -531,12 +516,4 @@ export function ComposeDesk({
       ) : null}
     </section>
   );
-}
-
-function langChip(active: boolean): string {
-  return `rounded-full px-3 py-1 text-sm transition disabled:opacity-40 ${
-    active
-      ? "bg-ink text-foam"
-      : "border border-line bg-paper text-ink-muted hover:border-tide hover:text-ink"
-  }`;
 }

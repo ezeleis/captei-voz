@@ -18,7 +18,7 @@ The corretor speaks a rough note in ES, EN, or PT. Captei Voz turns it into a pr
 ## Hero (confirmed)
 
 1. **Compose desk** — mic → AssemblyAI streaming STT → rewrite tone/register/language → verbatim stock-voice render → human approve → manual handoff.
-2. **Consented live qualify** — Voice Agent session as if the owner already submitted “Quanto vale o meu imóvel?”
+2. **Consented live qualify** — Voice Agent session as if the owner already submitted “Quanto vale o meu imóvel?”, in PT, ES or EN.
 
 Hero 2 gets built first. It is the one that reads as a *voice agent* rather than a voice-powered tool, and it is what the judging rubric rewards.
 

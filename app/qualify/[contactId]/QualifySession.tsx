@@ -2,15 +2,22 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { langChipClass } from "@/app/components/langChip";
 import { PcmPlayer } from "@/lib/audio/play-pcm";
 import {
-  QUALIFY_VOICE_ID,
   RECORD_QUALIFICATION_TOOL,
+  SESSION_STATE_LABEL,
   qualifyGreeting,
   qualifySystemPrompt,
   type QualificationPayload,
 } from "@/lib/assemblyai/qualify-config";
+import { COMPOSE_VOICE_LABEL, voiceForNoteLang } from "@/lib/assemblyai/voices";
 import type { CorretorIdentity } from "@/lib/disclosure";
+import {
+  NOTE_LANG_LABEL,
+  NOTE_LANGS,
+  type NoteLang,
+} from "@/lib/note-lang";
 
 type SessionState = "idle" | "connecting" | "live" | "ending" | "ended" | "error";
 
@@ -27,6 +34,7 @@ type Props = {
 
 export function QualifySession({ contactId, contactName }: Props) {
   const [state, setState] = useState<SessionState>("idle");
+  const [ownerLang, setOwnerLang] = useState<NoteLang>("pt");
   const [error, setError] = useState<string | null>(null);
   const [log, setLog] = useState<LogLine[]>([]);
   const [qualification, setQualification] = useState<QualificationPayload | null>(
@@ -155,19 +163,22 @@ export function QualifySession({ contactId, contactName }: Props) {
 
       ws.addEventListener("open", () => {
         const who = tokenBody.corretor ?? null;
-        const session = tokenBody.agentId
-          ? { agent_id: tokenBody.agentId }
-          : {
-              system_prompt: qualifySystemPrompt(who),
-              greeting: qualifyGreeting(who),
+        // Inline only. A stored agent_id would freeze Portuguese voice and greeting.
+        ws.send(
+          JSON.stringify({
+            type: "session.update",
+            session: {
+              system_prompt: qualifySystemPrompt(who, ownerLang),
+              greeting: qualifyGreeting(who, ownerLang),
               tools: [RECORD_QUALIFICATION_TOOL],
-              input: { language_codes: ["pt"] },
+              input: { language_codes: [ownerLang] },
               output: {
-                voice: QUALIFY_VOICE_ID,
+                voice: voiceForNoteLang(ownerLang),
                 format: { encoding: "audio/pcm" },
               },
-            };
-        ws.send(JSON.stringify({ type: "session.update", session }));
+            },
+          }),
+        );
       });
 
       ws.addEventListener("message", (event) => {
@@ -261,7 +272,7 @@ export function QualifySession({ contactId, contactName }: Props) {
       setState("error");
       setError(err instanceof Error ? err.message : "falha ao iniciar a sessão");
     }
-  }, [appendLog, cleanup, contactId, flushTools]);
+  }, [appendLog, cleanup, contactId, flushTools, ownerLang]);
 
   useEffect(() => {
     const onHide = () => {
@@ -284,9 +295,28 @@ export function QualifySession({ contactId, contactName }: Props) {
   return (
     <section className="mt-8 space-y-6">
       <p className="text-sm text-ink-muted">
-        Falando com <strong className="text-ink">{contactName}</strong>. Use
-        Chrome ou Edge. Fones ajudam se o eco cancelar mal.
+        Falando com <strong className="text-ink">{contactName}</strong>. Fones
+        ajudam se houver eco.
       </p>
+
+      <fieldset className="flex flex-wrap items-center gap-2 rounded-2xl border border-line bg-foam p-4 text-sm sm:p-5">
+        <legend className="sr-only">Idioma da conversa</legend>
+        <span className="w-28 shrink-0 text-ink-muted">Conversar em</span>
+        {NOTE_LANGS.map((code) => (
+          <button
+            key={code}
+            type="button"
+            disabled={state === "connecting" || state === "live" || state === "ending"}
+            onClick={() => setOwnerLang(code)}
+            className={langChipClass(ownerLang === code)}
+          >
+            {NOTE_LANG_LABEL[code]}
+          </button>
+        ))}
+        <p className="w-full text-xs text-ink-muted">
+          Voz: <span className="text-ink">{COMPOSE_VOICE_LABEL[ownerLang]}</span>
+        </p>
+      </fieldset>
 
       <div className="flex flex-wrap items-center gap-3">
         <button
@@ -314,7 +344,7 @@ export function QualifySession({ contactId, contactName }: Props) {
                 : "bg-sand text-ink-muted"
           }`}
         >
-          {state}
+          {SESSION_STATE_LABEL[state]}
         </span>
       </div>
 
