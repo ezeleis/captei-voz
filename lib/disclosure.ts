@@ -41,7 +41,7 @@ export function identificationBlock(
 ): string {
   switch (lang) {
     case "es":
-      return `${who.fullName}, corredor de inmuebles, CRECI ${who.creci}.`;
+      return `${who.fullName}, corredor inmobiliario, CRECI ${who.creci}.`;
     case "en":
       return `${who.fullName}, real estate broker, CRECI ${who.creci}.`;
     default:
@@ -53,7 +53,7 @@ export function identificationBlock(
 export function humanReplyAffordance(lang: NoteLang = "pt"): string {
   switch (lang) {
     case "es":
-      return "Si prefiere, responda en cualquier momento y hablo directamente con usted.";
+      return "Si preferís, respondé cuando quieras y hablo directo con vos.";
     case "en":
       return "If you prefer, reply at any time and I will speak with you directly.";
     default:
@@ -94,6 +94,7 @@ export const FORBIDDEN_CLAIMS = [
   "soa como você",
   "sounds like you",
   "suena como tú",
+  "suena como vos",
   "suena como usted",
   "100% em conformidade com a lgpd",
 ] as const;

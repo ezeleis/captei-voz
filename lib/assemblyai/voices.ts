@@ -10,7 +10,8 @@ import type { NoteLang } from "@/lib/note-lang";
  * https://www.assemblyai.com/docs/voice-agents/voice-agent-api/voices
  *
  * Used by compose TTS and live qualify. `lola` is the only Spanish voice
- * and is female — gender cannot match `rafael`. Catalog limit, not a choice.
+ * (🇪🇸; no Argentine TTS exists). Spanish *copy* is Río de la Plata; the
+ * accent is still `lola`. Female — gender cannot match `rafael`.
  */
 
 export const COMPOSE_VOICE_BY_LANG: Record<NoteLang, string> = {

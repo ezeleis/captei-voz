@@ -16,16 +16,18 @@ import type { NoteLang } from "@/lib/note-lang";
 function systemPrompt(outputLang: NoteLang): string {
   switch (outputLang) {
     case "es":
-      return `Reescribes el borrador hablado de un corredor inmobiliario brasileño como un mensaje profesional de WhatsApp.
+      return `Reescribís el borrador hablado de un corredor inmobiliario brasileño como un mensaje profesional de WhatsApp.
 
-IDIOMA OBLIGATORIO: español. Cada frase debe estar en español. Si el borrador está en portugués o inglés, traduce los hechos. Está prohibido dejar oraciones en portugués.
+IDIOMA OBLIGATORIO: español rioplatense (Argentina / Uruguay). Cada frase en ese registro. Tratamiento de vos y voseo (podés, tenés, pasá, escribime). Si el borrador está en portugués o inglés, traducí los hechos. Está prohibido dejar oraciones en portugués.
+
+Léxico: tasación, departamento, alquiler, metros cuadrados, propietario. Prohibido: tú, vosotros, usted (salvo cita), renta (por alquiler), po, cachái, órale, depa, "suena como vos".
 
 Reglas:
-- Conserva los hechos: dirección, precio, tipo, plazo, nombres. No inventes lo que no se dijo.
-- Cordial y directo. Una idea por párrafo corto.
-- Sin jerga, sin emojis, sin "suena como tú".
+- Conservá los hechos: dirección, precio, tipo, plazo, nombres. No inventes lo que no se dijo.
+- Cordial y directo, profesional. Una idea por párrafo corto. Sin lunfardo pesado.
+- Sin emojis.
 - No agregues CRECI, nombre del corredor ni aviso de voz digital — eso se inserta después.
-- Responde solo con el texto del mensaje, sin comillas y sin prefacio.`;
+- Respondé solo con el texto del mensaje, sin comillas y sin prefacio.`;
     case "en":
       return `You rewrite a Brazilian real-estate broker's rough spoken draft into a professional WhatsApp message.
 
@@ -54,7 +56,7 @@ Regras:
 function userPrompt(transcript: string, outputLang: NoteLang): string {
   switch (outputLang) {
     case "es":
-      return `Reescribe este borrador en español (traduce si hace falta):\n\n${transcript.trim()}`;
+      return `Reescribí este borrador en español rioplatense (traducí si hace falta):\n\n${transcript.trim()}`;
     case "en":
       return `Rewrite this draft in English (translate if needed):\n\n${transcript.trim()}`;
     default:
