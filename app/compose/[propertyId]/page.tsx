@@ -17,16 +17,16 @@ export default async function ComposePage({
       <SiteHeader current="compose" />
       <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-10 sm:py-14">
         <h1 className="font-display text-3xl font-semibold tracking-tight text-ink">
-          Mesa de composição
+          Mesa multicanal
         </h1>
         <p className="mt-2 max-w-xl text-ink-muted">
-          Fale o rascunho. O recado sai no idioma do proprietário — você
-          aprova o texto e o áudio antes de entregar.
+          Fale o rascunho. A IA devolve WhatsApp, e-mail e roteiro de áudio no
+          idioma do proprietário — você aprova antes de copiar ou entregar.
         </p>
 
         <p className="mt-6 rounded-2xl border border-line bg-foam px-4 py-3 text-sm text-ink-muted">
-          A entrega é o arquivo de áudio e o texto, numa conversa que o
-          proprietário já abriu. Nada é enviado automaticamente.
+          Entrega manual em cada canal. Nada é enviado por bot; use só em
+          conversas consentidas ou janelas abertas pelo proprietário.
         </p>
 
         {!gated.ok ? (

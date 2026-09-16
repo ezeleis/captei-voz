@@ -15,6 +15,18 @@ export type CorretorIdentity = {
   creci: string;
 };
 
+/** Written channels (WhatsApp text, e-mail). */
+export function writtenDisclosure(lang: NoteLang = "pt"): string {
+  switch (lang) {
+    case "es":
+      return "Mensaje redactado con asistencia de IA y aprobado por el corredor identificado abajo.";
+    case "en":
+      return "Message drafted with AI assistance and approved by the broker identified below.";
+    default:
+      return "Mensagem redigida com assistência de IA e aprovada pelo corretor identificado abaixo.";
+  }
+}
+
 /**
  * Spoken at the top of the audio itself, not only in a text caption the owner
  * may never read. Short on purpose: it has to survive being heard once.
