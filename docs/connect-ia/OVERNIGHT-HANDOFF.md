@@ -29,7 +29,11 @@
 
 - [x] `npm run typecheck` exit 0
 - [x] `npm run build` exit 0 (includes `/`, `/connect-ia`, `/compose/[propertyId]`)
-- [ ] `/compose/demo` — three tabs (browser check on this PR; production URL depends on Vercel)
+- [x] Local `/` — Captei hero + three cards + footer (desktop and ~390px)
+- [x] Local `/compose/demo` — Mesa multicanal loaded (tabs appear after rewrite; no API key in this env)
+- [x] Local `/connect-ia` — pitch + links
+- [x] Local `/qualify/demo` — no header regression
+- [ ] Production https://captei-voz.vercel.app/ still serves the **old** homepage (`Captei Voz`); `/connect-ia` is 404 until this branch deploys
 
 ## Blocked
 
