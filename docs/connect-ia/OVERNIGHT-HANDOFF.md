@@ -55,7 +55,7 @@
   - `05deb65` docs(connect-ia): apply captação-led positioning to form and video script
   - `1065013` feat(home): rebrand Captei as captação e qualificação copilot
   - `23905b3` docs(architecture): scaffold multi-provider adapter pattern
-  - _(this commit)_ docs(connect-ia): sync submission pack and overnight handoff
+  - `c03a156` docs(connect-ia): sync submission pack and overnight handoff
 
 ## Deploy URL
 
