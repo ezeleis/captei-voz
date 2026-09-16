@@ -9,6 +9,8 @@ Documentação e inscrição para o **Programa de Pré-Incubação InPETU Connec
 | Campo | Valor |
 |-------|--------|
 | **Nome no formulário** | Captei |
+| **One-liner** | Copiloto de IA para captação e qualificação de proprietários, com outreach omnichannel (WhatsApp, e-mail, voz) e compliance integrado |
+| **Segmento** | PropTech B2B — captação e qualificação imobiliária (outreach omnichannel) |
 | **Demo** | https://captei-voz.vercel.app/ |
 | **Repo produto** | `C:\Users\Admin\Projects\captei-voz` |
 | **Prazo inscrição** | Até **20/09/2026, 23:59** |
@@ -32,7 +34,10 @@ Documentação e inscrição para o **Programa de Pré-Incubação InPETU Connec
 ```
 connect-ia/
 ├── README.md
-├── OVERNIGHT-CLOUD-AGENT-PROMPT.md   ← agente noturno
+├── OVERNIGHT-HANDOFF.md              ← checklist da manhã
+├── OVERNIGHT-CLOUD-AGENT-PROMPT.md
+├── diagram-export.md
+├── pitch-deck-outline.md
 ├── inscricao/
 │   ├── formulario-respostas.md
 │   ├── video-roteiro.md
@@ -51,26 +56,44 @@ connect-ia/
 
 ## Checklist submissão (20/09)
 
+### Feito nesta passagem (agente)
+
+- [x] Posicionamento captação-led no formulário, roteiro e one-pager
+- [x] Homepage Captei (captação e qualificação) + `/connect-ia`
+- [x] Mesa multicanal (Task 2) — verificar deploy público
+- [x] Scaffold multi-provedor (`lib/providers/types.ts`)
+- [x] Diagrama + outline do deck
+
+### Humano (manhã)
+
 - [ ] 2 entrevistas corretores + citação no vídeo
 - [ ] Vídeo ≤ 3 min gravado ([`inscricao/video-roteiro.md`](inscricao/video-roteiro.md))
 - [ ] Formulário preenchido ([`inscricao/formulario-respostas.md`](inscricao/formulario-respostas.md))
 - [ ] Integrante 2 confirmado
 - [ ] Link vídeo testado (aba anônima)
 - [ ] Presença presencial FLN confirmada ([`programa/cronograma.md`](programa/cronograma.md))
+- [ ] Submit https://forms.gle/LSNnsPoCuKFNpdJY7 antes de 20/09 23:59
+
+Detalhe ordenado: [`OVERNIGHT-HANDOFF.md`](OVERNIGHT-HANDOFF.md).
 
 ## Status
 
 | Artefato | Status |
 |----------|--------|
-| One-pager Captei | Pronto |
-| Formulário rascunho | Pronto |
+| One-pager Captei | Pronto — posicionamento captação-led |
+| Formulário rascunho | Pronto — one-liner + hierarquia de dor |
 | Roteiro vídeo | Pronto — falta citação entrevista |
+| Pitch deck outline | Pronto |
+| Diagrama export | Pronto (`diagram-export.md` + SVG) |
 | Feasibility scorecard | Pronto |
 | Entrevistas corretores | Pendente |
 | Vídeo gravado | Pendente |
 | Inscrição enviada | Pendente |
-| Demo omnichannel (texto/email tab) | ✅ Implementado em `captei-voz` (deploy pendente) |
+| Demo omnichannel (WA / e-mail / áudio) | ✅ Implementado (`/compose/demo`) |
+| Homepage rebrand | ✅ Captei · captação e qualificação |
+| Página `/connect-ia` | ✅ |
+| Provider scaffold | ✅ Tipos + docs; AssemblyAI continua sendo o adapter |
 
 ## Paralelo
 
-- **AssemblyAI Hackathon** (30/09/2026): mesmo repo `captei-voz` — vídeo 3–5 min separado.
+- **AssemblyAI Hackathon** (30/09/2026): mesmo repo `captei-voz` — headline **Captei Voz** (voice agent + compose desk); vídeo 3–5 min separado.
