@@ -98,7 +98,7 @@ A IA é **núcleo da solução**:
 
 **Por que isso é IA aplicada, não wrapper:** restrições de plataforma (Meta WhatsApp, LGPD) exigem **decisão agentica** por canal — a IA adapta conteúdo e roteamento, não só gera texto genérico. A demo atual usa AssemblyAI; a arquitetura é de adaptadores (`compose/` + `consent/` vendor-neutral → `providers/*`).
 
-Roadmap: integração Fechou CRM, cadências Track C, Prince speed-to-lead, Divulga para aquisição; TTS/clone ElevenLabs pós-hackathon.
+Roadmap: integração Fechou CRM, cadências Track C, Prince speed-to-lead, Divulga para aquisição; TTS/clone ElevenLabs pós-MVP.
 
 ---
 
@@ -141,7 +141,6 @@ Roteiro: [`video-roteiro.md`](video-roteiro.md).
 
 ## Notas internas
 
-- Repositório produto: `C:\Users\Admin\Projects\captei-voz`
-- Paperwork: `IntelMuCoCreate/connect-ia/` (espelho em `docs/connect-ia/` neste repo)
+- Repositório produto: `C:\Users\Admin\Projects\captei-voz` (`github.com/ezeleis/captei-voz`)
+- Paperwork canonical: `captei-voz/docs/connect-ia/` — espelho: `IntelMuCoCreate/connect-ia/`
 - IntelMuCoCreate (AlterEgo/MucoCreate): **fora desta inscrição** — desenvolvimento pausado para o edital
-- Hackathon AssemblyAI (30/09): mesmo repo Captei — entrega **Captei Voz** (voice agent + compose desk); vídeo separado

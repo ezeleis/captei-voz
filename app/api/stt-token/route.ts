@@ -9,8 +9,8 @@ export const runtime = "nodejs";
  * Mint a single-use temporary token for Real-time (streaming) STT.
  *
  * The compose desk transcribes live rather than uploading a finished file:
- * both technology paths this hackathon sanctions are real-time, and nothing
- * blesses batch transcription as the foundation of a submission.
+ * live capture keeps latency low and matches the compose-desk UX; batch upload
+ * is a separate path if we add it later.
  * See docs/bmad/stress-test.md, claim 4.
  *
  * Auth note: this endpoint takes the BARE key, not `Bearer`. The Voice Agent

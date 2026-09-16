@@ -40,12 +40,15 @@ Data referência: **inscrição set/2026**.
 | 03-data-model.md | Schema prospecting_signals, contacts |
 | 04-decisions-local | Decisões LGPD locais |
 
-### Connect IA paperwork (`IntelMuCoCreate/connect-ia/`)
+### Connect IA paperwork (`docs/connect-ia/` — canonical)
 
 | Ativo | Descrição |
 |-------|-----------|
 | one-pager, formulário, roteiro | Inscrição Captei |
 | feasibility-scorecard | Análise pivot |
+| baseline IP tag | `programa/propriedade-intelectual.md` |
+
+Espelho: `IntelMuCoCreate/connect-ia/`.
 
 ### Fora desta inscrição (pré-existentes, outros produtos)
 
@@ -61,7 +64,7 @@ Data referência: **inscrição set/2026**.
 | Nome | Uso |
 |------|-----|
 | **Captei** | Inscrição Connect IA |
-| Captei Voz | Nome técnico/hackathon do repo |
+| captei-voz | Nome do repositório / deploy Vercel |
 | Fechou | CRM plataforma (integração futura) |
 
 ---
@@ -73,3 +76,17 @@ Data referência: **inscrição set/2026**.
 | _[ ]_ | _[ ]_ | S/N |
 
 Confirmar com SINOVA/UFSC antes de comercializar IP gerada no programa.
+
+---
+
+## Baseline pré-programa (Connect IA)
+
+| Campo | Valor |
+|-------|-------|
+| Tag Git | `connect-ia-baseline-2026-09-16` |
+| Commit | `b52149057d05cd96a71fcf12509d326c68634dab` |
+| Data | 2026-09-16 |
+| Titular | Participantes (pré-kick-off 07/10/2026) |
+| Repositório | `github.com/ezeleis/captei-voz` |
+
+Recuperar código: `git checkout connect-ia-baseline-2026-09-16`

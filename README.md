@@ -1,47 +1,50 @@
-# Captei Voz
+# Captei
 
-**Status:** idea locked 2026-09-08, stress-tested and amended the same day.
-Amendments A1–A4 approved — see `docs/bmad/stress-test.md`. Live qualify and
-compose-desk TTS are in the repo.
+**Connect IA** — copiloto de IA para captação e qualificação imobiliária
+(WhatsApp, e-mail, voz). Compliance-first: aprovação humana, sem disparo frio.
 
-AssemblyAI Voice Agent Hackathon (lablab, 1–30 Sep 2026) slice of Captei.  
-Not Truquipoker. Not Connect IA / MucoCreate. Not cold WhatsApp captacão.
+**Demo:** https://captei-voz.vercel.app/  
+**Programa:** InPETU Connect IA (Edital 02/2026) — docs em `docs/connect-ia/`.
 
-## One sentence
+## O que é
 
-The corretor speaks a rough note in ES, EN, or PT. Captei Voz turns it into a professional Brazilian-Portuguese WhatsApp voice note plus text that they **approve** before anything is sent — and it can only reach owners who already **opted in** *and* wrote first.
+O corretor fala rough em PT, ES ou EN. O Captei devolve texto para WhatsApp,
+e-mail e áudio profissional — só depois de **aprovar**. Proprietários só entram
+por consentimento (Track A) ou contato humano (Track B).
 
-> “Neutral” was dropped from this claim deliberately. AssemblyAI's only
-> Portuguese voice is European-accented, so the claim has to match whichever
-> voice survives the listen test. See `docs/bmad/stress-test.md`, claim 3.
+| Tela | Rota | Função |
+|------|------|--------|
+| Qualificação ao vivo | `/qualify/demo` | Voice Agent com proprietário que já optou in |
+| Mesa de composição | `/compose/demo` | STT → rewrite → WhatsApp / e-mail / áudio |
+| Connect IA | `/connect-ia` | Resumo do programa e arquitetura |
 
-## Hero (confirmed)
+## Stack (MVP)
 
-1. **Compose desk** — mic → AssemblyAI streaming STT → rewrite tone/register/language → verbatim stock-voice render → human approve → manual handoff.
-2. **Consented live qualify** — Voice Agent session as if the owner already submitted “Quanto vale o meu imóvel?”, in PT, ES or EN.
+- **AssemblyAI** — streaming STT, Voice Agent, LLM Gateway (adapter atual)
+- **Next.js 15** — deploy Vercel
+- Regras de produto: `docs/IDEA-LOCK.md`
+- Compliance captacao: `C:\Users\Admin\Projects\CRM\docs\captacao\`
 
-Hero 2 gets built first. It is the one that reads as a *voice agent* rather than a voice-powered tool, and it is what the judging rubric rewards.
+## Desenvolvimento local
 
-**Not in scope:** any automated WhatsApp sender; auto-send to Track B worklist / portal-scraped numbers. Voice **clone** is a later Captei upsell (not AssemblyAI — they have no cloning API, and no standalone TTS either).
+```powershell
+npm install
+cp .env.example .env.local   # ASSEMBLYAI_API_KEY, CORRETOR_FULL_NAME, CORRETOR_CRECI
+npm run dev
+```
 
-## Next
+Restart `npm run dev` after changing env. No quotes unless values have spaces.
 
-Live qualify is working (`/qualify/demo`). Compose desk is at `/compose/demo`
-— speak, rewrite in the owner language, render verbatim audio with the stock
-voice for that language (`rafael` PT, `lola` ES, `michael` EN), approve.
-Playback uses the continuous worklet on one AudioContext.
+Composed-note TTS runs in the browser (token from server). After approve: WAV
+download, copy, and `wa.me` (text only — WhatsApp cannot attach audio via URL).
 
-Need `ASSEMBLYAI_API_KEY` plus `CORRETOR_FULL_NAME` and `CORRETOR_CRECI` in
-`.env.local` (and the same names on Vercel). Restart `npm run dev` after
-changing env. No quotes unless the value has spaces.
+## Documentação
 
-Composed-note TTS runs in the browser (token from our server, greeting
-verbatim). That is what lets the demo live on Vercel Hobby without a 10 s
-serverless timeout.
+| Pasta | Conteúdo |
+|-------|----------|
+| `docs/connect-ia/` | Inscrição, proposta, IP (canonical) |
+| `docs/bmad/` | Product brief, stress-test, MVP |
+| `docs/architecture/` | Provider adapters |
+| `docs/archive/` | Artefatos históricos (hackathon, agent handoffs) |
 
-After approve, compose offers WAV download, copy, and `wa.me` (text only —
-WhatsApp cannot attach audio via URL). Demo script: `docs/DEMO-SCRIPT.md`.
-Pitch pack (video, deck, description) is still open.
-
-Analysis: `docs/bmad/` — `product-brief.md`, `stress-test.md`, `recommended-mvp.md`.
-Legal rails: `docs/IDEA-LOCK.md` and `C:\Users\Admin\Projects\CRM\docs\captacao\`.
+Roteiro demo vídeo Connect IA: `docs/connect-ia/demo-script.md`.

@@ -2,7 +2,7 @@
   "name": "captei-voz",
   "version": "0.1.0",
   "private": true,
-  "description": "Compose desk for real-estate voice notes. AssemblyAI Voice Agent Hackathon 2026.",
+  "description": "Captei — copiloto IA para captação e qualificação imobiliária (Connect IA).",
   "license": "MIT",
   "engines": {
     "node": ">=20"

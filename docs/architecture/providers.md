@@ -27,7 +27,7 @@ flowchart LR
     AAI["lib/assemblyai/*"]
   end
 
-  subgraph later [Post-hackathon]
+  subgraph later [Roadmap pós-MVP]
     EL[ElevenLabs clone / TTS]
     OA[OpenAI / Anthropic rewrite]
   end
@@ -50,8 +50,8 @@ flowchart LR
         ▼
   providers/*               ← interfaces only (this scaffold)
         │
-        ├── lib/assemblyai/*     TODAY (hackathon + demo)
-        ├── ElevenLabs           POST-hackathon (clone / TTS per IDEA-LOCK)
+        ├── lib/assemblyai/*     TODAY (demo / MVP)
+        ├── ElevenLabs           roadmap (clone / TTS per IDEA-LOCK)
         └── OpenAI / Anthropic   optional rewrite
 ```
 
@@ -66,7 +66,7 @@ flowchart LR
 
 Interfaces: `lib/providers/types.ts`. Working calls stay in `lib/assemblyai/*`
 until a second adapter is added — swapping them now is a regression risk for
-the Connect IA / hackathon demos.
+the Connect IA demo.
 
 ## Env pattern (documented, not wired)
 
@@ -87,7 +87,7 @@ Auth remains three-way for AssemblyAI (Bearer on Voice Agent token; bare key on
 End sessions explicitly: `session.end` for Voice Agent, `Terminate` for
 Streaming STT. Never just close the socket.
 
-## Post-hackathon
+## Roadmap pós-MVP
 
 - **ElevenLabs** for clone / TTS (IDEA-LOCK). Do not add the SDK or new keys
   until that work is scheduled.

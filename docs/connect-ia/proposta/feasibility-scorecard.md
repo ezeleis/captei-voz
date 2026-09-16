@@ -65,8 +65,6 @@ Síntese da análise estruturada (Gemini + docs internos) para decisão de pivot
 | D4 | Formulário preenchido; integrante 2 confirmado |
 | D5 | Submit + link testado em aba anônima |
 
-**Paralelo:** AssemblyAI hackathon (30/09) — mesmo repo `captei-voz`, vídeo separado 3–5 min.
-
 ---
 
 ## Score estimado Connect IA (Captei)

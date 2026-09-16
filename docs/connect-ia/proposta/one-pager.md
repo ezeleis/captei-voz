@@ -76,7 +76,7 @@ A IA não substitui o corretor — **amplifica** a qualidade do outbound e reduz
 | BMAD: product brief, stress-test legal, IDEA-LOCK | Entrevistas gravadas + citações no vídeo |
 | Estratégia captação + LGPD (`CRM/docs/captacao/`) | Piloto com 1 imobiliária FLN |
 | Fundador CRECI + rede de corretores | BMC, pricing, integração Fechou CRM |
-| Scaffold multi-provedor (`lib/providers/types.ts`) | Roteamento `CAPTEI_*_PROVIDER` (pós-hackathon) |
+| Scaffold multi-provedor (`lib/providers/types.ts`) | Roteamento `CAPTEI_*_PROVIDER` (pós-MVP) |
 
 **Posicionamento:** captação-led — pré-incubação com **demo funcional** — honesto e acima da média do edital.
 

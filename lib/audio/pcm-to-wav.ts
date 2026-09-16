@@ -2,7 +2,7 @@
  * PCM16 LE (Voice Agent output) → downloadable WAV.
  *
  * WhatsApp's native voice-note UI wants Ogg/Opus ≤ 512 KB. That encode is
- * post-hackathon (ffmpeg). WAV is what the corretor can listen to and attach
+ * post-MVP (ffmpeg). WAV is what the corretor can listen to and attach
  * by hand today.
  */
 

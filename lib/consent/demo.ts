@@ -3,7 +3,7 @@ import "server-only";
 import type { ReachableContact } from "@/lib/consent/gate";
 
 /**
- * Seeded demo contact for the hackathon.
+ * Seeded demo contact for the public demo.
  *
  * The CRM this product is meant to read consent from does not exist yet
  * (Epic 1, no leads table). The demo therefore cannot prove a real Track A
