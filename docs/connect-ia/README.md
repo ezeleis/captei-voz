@@ -1,29 +1,76 @@
-# Connect IA — Captei (product repo)
+# Connect IA — Captei
 
-Paperwork master copies live in `IntelMuCoCreate/connect-ia/`. This folder tracks **product-side** Connect IA deliverables.
+Documentação e inscrição para o **Programa de Pré-Incubação InPETU Connect IA** (Edital nº 02/2026/InPETU hub/CTC/UFSC).
 
-**Deadline:** 20/09/2026 23:59  
-**Demo:** https://captei-voz.vercel.app/
+**Canonical copy for cloud agent:** this folder (`docs/connect-ia/`) in the **captei-voz** repo. Mirror may exist in `IntelMuCoCreate/connect-ia/`.
 
-## Implementation status
+**Pivot (15/09/2026):** inscrição **Captei** — captação e qualificação, outreach omnichannel.
 
-| Item | Status |
-|------|--------|
-| Omnichannel compose (WA + email + áudio) | ✅ Task 2 — branch local |
-| Homepage Captei rebrand | 🔜 Overnight Task 3 |
-| Doc sync from IntelMuCoCreate | 🔜 Overnight Task 1 |
-| Pitch deck outline | 🔜 Overnight Task 5 |
-| Vídeo Connect IA (≤ 3 min) | 👤 Human |
-| Entrevistas corretores | 👤 Human |
+| Campo | Valor |
+|-------|--------|
+| **Nome no formulário** | Captei |
+| **Demo** | https://captei-voz.vercel.app/ |
+| **Repo produto** | `C:\Users\Admin\Projects\captei-voz` |
+| **Prazo inscrição** | Até **20/09/2026, 23:59** |
 
-## Test omnichannel compose
+## Links oficiais
 
-1. `npm run dev` with `.env.local` (`ASSEMBLYAI_API_KEY`, `CORRETOR_*`)
-2. Open `/compose/demo`
-3. Falar rascunho → **Canais de entrega**: WhatsApp | E-mail | Áudio
-4. Aprovar → copiar manualmente (sem auto-send)
+- [Formulário](https://forms.gle/LSNnsPoCuKFNpdJY7)
+- [InPETU oportunidades](https://inpetuhub.sites.ufsc.br/category/oportunidades/)
+- Edital PDF: `C:\Users\Admin\Projects\1719435285478.pdf`
+- contato@inpetu.com.br
 
-## Do not
+## Equipe formal (máx. 2)
 
-- Cold WhatsApp automation (`docs/IDEA-LOCK.md`)
-- Modify `IntelMuCoCreate/Source/` (AlterEgo — separate track)
+| Papel | Nome | CPF |
+|-------|------|-----|
+| Representante | Facundo Ezequiel Leis Pou | 244.743.228-35 |
+| Integrante 2 | _[preencher]_ | _[preencher]_ |
+
+## Estrutura
+
+```
+connect-ia/
+├── README.md
+├── OVERNIGHT-CLOUD-AGENT-PROMPT.md   ← agente noturno
+├── inscricao/
+│   ├── formulario-respostas.md
+│   ├── video-roteiro.md
+│   └── video-checklist.md
+├── proposta/
+│   ├── one-pager.md
+│   ├── criterios-avaliacao.md
+│   ├── feasibility-scorecard.md
+│   ├── arquitetura-omnichannel.md
+│   └── entrevistas-corretores.md
+└── programa/
+    ├── cronograma.md
+    ├── obrigacoes.md
+    └── propriedade-intelectual.md
+```
+
+## Checklist submissão (20/09)
+
+- [ ] 2 entrevistas corretores + citação no vídeo
+- [ ] Vídeo ≤ 3 min gravado ([`inscricao/video-roteiro.md`](inscricao/video-roteiro.md))
+- [ ] Formulário preenchido ([`inscricao/formulario-respostas.md`](inscricao/formulario-respostas.md))
+- [ ] Integrante 2 confirmado
+- [ ] Link vídeo testado (aba anônima)
+- [ ] Presença presencial FLN confirmada ([`programa/cronograma.md`](programa/cronograma.md))
+
+## Status
+
+| Artefato | Status |
+|----------|--------|
+| One-pager Captei | Pronto |
+| Formulário rascunho | Pronto |
+| Roteiro vídeo | Pronto — falta citação entrevista |
+| Feasibility scorecard | Pronto |
+| Entrevistas corretores | Pendente |
+| Vídeo gravado | Pendente |
+| Inscrição enviada | Pendente |
+| Demo omnichannel (texto/email tab) | ✅ Implementado em `captei-voz` (deploy pendente) |
+
+## Paralelo
+
+- **AssemblyAI Hackathon** (30/09/2026): mesmo repo `captei-voz` — vídeo 3–5 min separado.
