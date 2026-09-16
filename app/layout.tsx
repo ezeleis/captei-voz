@@ -16,9 +16,9 @@ const sans = Source_Sans_3({
 });
 
 export const metadata: Metadata = {
-  title: "Captei Voz",
+  title: "Captei — captação e qualificação",
   description:
-    "Fale rápido, envie profissional. Mesa de composição de áudios para corretores de imóveis.",
+    "Copiloto de IA para captação e qualificação de proprietários, com outreach omnichannel (WhatsApp, e-mail, voz) e compliance integrado.",
 };
 
 export default function RootLayout({

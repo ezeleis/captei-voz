@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720" role="img" aria-label="Captei - arquitetura omnichannel">
+  <title>Captei - arquitetura omnichannel</title>
+  <rect width="1280" height="720" fill="#f4efe6"/>
+  <text x="48" y="48" font-family="Georgia, 'Palatino Linotype', serif" font-size="28" font-weight="600" fill="#1a3c3a">Captei - mesa omnichannel</text>
+  <text x="48" y="76" font-family="ui-sans-serif, system-ui, sans-serif" font-size="14" fill="#4a6563">compose/ + consent/ -&gt; providers/*  |  AssemblyAI na demo atual  |  sem disparo frio</text>
+
+  <!-- Track B -->
+  <rect x="40" y="110" width="280" height="200" rx="16" fill="#faf7f2" stroke="#d9d0c3"/>
+  <text x="56" y="138" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12" font-weight="700" letter-spacing="2" fill="#2f6f6a">TRACK B  DESCOBRIR</text>
+  <rect x="56" y="156" width="248" height="36" rx="8" fill="#e8dfd2"/>
+  <text x="180" y="179" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="14" fill="#1a3c3a">An&#250;ncios / FSBO</text>
+  <rect x="56" y="204" width="248" height="36" rx="8" fill="#e8dfd2"/>
+  <text x="180" y="227" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="14" fill="#1a3c3a">IA  scoring de sinais</text>
+  <rect x="56" y="252" width="248" height="36" rx="8" fill="#e8dfd2"/>
+  <text x="180" y="275" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="14" fill="#1a3c3a">Worklist - humano telefona</text>
+
+  <!-- Track A -->
+  <rect x="360" y="110" width="280" height="200" rx="16" fill="#faf7f2" stroke="#d9d0c3"/>
+  <text x="376" y="138" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12" font-weight="700" letter-spacing="2" fill="#2f6f6a">TRACK A  ATRAIR</text>
+  <rect x="376" y="156" width="248" height="36" rx="8" fill="#e8dfd2"/>
+  <text x="500" y="179" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="14" fill="#1a3c3a">Divulga  opt-in</text>
+  <rect x="376" y="204" width="248" height="36" rx="8" fill="#e8dfd2"/>
+  <text x="500" y="227" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="14" fill="#1a3c3a">Voice Agent (qualificar)</text>
+  <rect x="376" y="252" width="248" height="36" rx="8" fill="#e8dfd2"/>
+  <text x="500" y="275" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="14" fill="#1a3c3a">Resposta texto instant&#226;nea</text>
+
+  <!-- Compose -->
+  <rect x="680" y="110" width="560" height="200" rx="16" fill="#faf7f2" stroke="#2f6f6a"/>
+  <text x="696" y="138" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12" font-weight="700" letter-spacing="2" fill="#2f6f6a">MESA MULTICANAL</text>
+  <rect x="696" y="156" width="168" height="36" rx="8" fill="#1a3c3a"/>
+  <text x="780" y="179" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="14" fill="#faf7f2">Mic PT/ES/EN</text>
+  <rect x="880" y="156" width="160" height="36" rx="8" fill="#2f6f6a"/>
+  <text x="960" y="179" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="14" fill="#faf7f2">STT</text>
+  <rect x="1056" y="156" width="160" height="36" rx="8" fill="#c45c26"/>
+  <text x="1136" y="179" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="14" fill="#faf7f2">LLM rewrite</text>
+  <rect x="696" y="252" width="160" height="36" rx="8" fill="#e8dfd2"/>
+  <text x="776" y="275" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="14" fill="#1a3c3a">WhatsApp</text>
+  <rect x="872" y="252" width="160" height="36" rx="8" fill="#e8dfd2"/>
+  <text x="952" y="275" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="14" fill="#1a3c3a">E-mail</text>
+  <rect x="1048" y="252" width="168" height="36" rx="8" fill="#e8dfd2"/>
+  <text x="1132" y="275" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="14" fill="#1a3c3a">Audio</text>
+  <text x="960" y="230" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13" fill="#4a6563">tr&#234;s canais  |  mesmo rascunho  |  idioma do propriet&#225;rio</text>
+
+  <!-- Gate -->
+  <rect x="40" y="360" width="600" height="160" rx="16" fill="#faf7f2" stroke="#d9d0c3"/>
+  <text x="56" y="388" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12" font-weight="700" letter-spacing="2" fill="#2f6f6a">GOVERNAN&#199;A</text>
+  <rect x="56" y="412" width="272" height="72" rx="8" fill="#e4efe6"/>
+  <text x="192" y="454" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="16" font-weight="600" fill="#2f6b4f">Aprova&#231;&#227;o humana</text>
+  <rect x="348" y="412" width="272" height="72" rx="8" fill="#e8dfd2"/>
+  <text x="484" y="454" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="16" fill="#1a3c3a">Log + consent_ref</text>
+
+  <!-- Deliver -->
+  <rect x="680" y="360" width="560" height="160" rx="16" fill="#faf7f2" stroke="#d9d0c3"/>
+  <text x="696" y="388" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12" font-weight="700" letter-spacing="2" fill="#2f6f6a">ENTREGAR</text>
+  <rect x="696" y="412" width="248" height="72" rx="8" fill="#f4d6d2"/>
+  <text x="820" y="444" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="15" font-weight="600" fill="#8b2e2e">Sem disparo frio WA</text>
+  <text x="820" y="466" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13" fill="#8b2e2e">handoff manual no MVP</text>
+  <rect x="968" y="412" width="248" height="72" rx="8" fill="#e8dfd2"/>
+  <text x="1092" y="454" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="16" fill="#1a3c3a">Fechou CRM</text>
+
+  <!-- Providers -->
+  <rect x="40" y="560" width="1200" height="120" rx="16" fill="#1a3c3a"/>
+  <text x="640" y="598" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12" font-weight="700" letter-spacing="2" fill="#9ec4c0">PROVIDERS</text>
+  <text x="640" y="632" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="18" fill="#faf7f2">SttProvider  |  LlmRewriter  |  TtsRenderer  |  VoiceAgentProvider</text>
+  <text x="640" y="658" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="14" fill="#9ec4c0">hoje: lib/assemblyai/*    depois: ElevenLabs TTS/clone  |  LLM opcional</text>
+</svg>

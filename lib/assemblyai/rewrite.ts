@@ -5,6 +5,12 @@ import type { NoteLang } from "@/lib/note-lang";
 import { complete } from "@/lib/assemblyai/rewrite-shared";
 
 /**
+ * AssemblyAI LLM Gateway adapter (single-channel). Captei’s rewrite contract
+ * is `LlmRewriter` in `lib/providers/types.ts`; this module and
+ * `rewrite-omnichannel.ts` are the current default implementation. Multi-
+ * provider routing (`CAPTEI_LLM_PROVIDER`) is documented, not wired — see
+ * `docs/architecture/providers.md`.
+ *
  * Register transfer: rough spoken PT/ES/EN → professional written note in
  * the owner's language. Facts stay; tone, register and language change.
  * The CRECI block is assembled later so the model cannot invent a number.

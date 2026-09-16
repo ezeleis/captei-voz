@@ -22,7 +22,7 @@ flowchart TB
   end
 
   subgraph respond [Responder]
-    VA[Voice Agent AssemblyAI]
+    VA[Voice Agent — adapter]
     TXT[Resposta texto instantânea]
     LP --> VA
     LP --> TXT
@@ -81,7 +81,8 @@ flowchart TB
 |------------|------|--------|
 | Compose desk (voz) | `captei-voz` | ✅ Demo |
 | Qualify live agent | `captei-voz` | ✅ Demo |
-| Compose texto/e-mail | `captei-voz` | 🔜 Overnight / pós-pivot |
+| ✅ Mesa multicanal (WA + e-mail + áudio) | `captei-voz` | ✅ Demo (`/compose/demo`) |
+| Provider adapters (interfaces) | `captei-voz/lib/providers` | ✅ Scaffold; AssemblyAI = adapter atual |
 | Captação strategy + legal | `CRM/docs/captacao/` | ✅ Docs |
 | CRM pipeline | `CRM` | Epic 1 (auth) |
 | Speed-to-lead | `Prince` | Planejado |
@@ -99,3 +100,5 @@ Captei não é “CRM com ChatGPT”. É **orquestração agentica multicanal** 
 4. humanos aprovam antes de qualquer outbound de risco reputacional.
 
 Isso é IA aplicada a problema real com restrições de plataforma — não IA genérica.
+
+**Pitch line:** stack multi-provedor; AssemblyAI na demo atual.

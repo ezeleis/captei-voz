@@ -9,12 +9,13 @@ Referência: Edital item 6.3 — https://forms.gle/LSNnsPoCuKFNpdJY7
 - [ ] Citação de corretor inserida no roteiro ([`../proposta/entrevistas-corretores.md`](../proposta/entrevistas-corretores.md))
 - [ ] Câmera horizontal 16:9, mic testado
 - [ ] Screenshot ou gravação de https://captei-voz.vercel.app/
-- [ ] Slide diagrama omnichannel ([`../proposta/arquitetura-omnichannel.md`](../proposta/arquitetura-omnichannel.md))
+- [ ] Slide diagrama omnichannel ([`../diagram-export.md`](../diagram-export.md))
 
 ## Conteúdo obrigatório
 
-- [ ] Problema captação (mandato perdido, WA, omnichannel)
-- [ ] Proposta Captei (omnichannel + aprovação humana)
+- [ ] Problema: captação primeiro, depois outbound, depois qualificação
+- [ ] Proposta Captei (copiloto de captação e qualificação + omnichannel + aprovação humana)
+- [ ] Linha de ampliação (“Começamos pela captação…”)
 - [ ] **IA central:** STT, LLM, Voice Agent, orquestração canal (≥ 45 s)
 - [ ] Compliance: **sem** disparo frio automatizado WA
 - [ ] Estágio: demo funcional + pré-incubação honesta

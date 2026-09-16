@@ -35,10 +35,10 @@
 Captei
 
 **Resumo em uma frase:**  
-Copiloto de IA para captação imobiliária omnichannel — WhatsApp, e-mail e voz — com aprovação humana, consentimento LGPD/Meta e demos funcionais para corretores e imobiliárias.
+Captei — copiloto de IA para captação e qualificação de proprietários, com outreach omnichannel (WhatsApp, e-mail, voz) e compliance integrado.
 
 **Área / segmento:**  
-B2B SaaS / PropTech / IA aplicada ao imobiliário brasileiro (captação de imóveis).
+PropTech B2B — captação e qualificação imobiliária (outreach omnichannel)
 
 **Existe empresa constituída?**  
 Não _(fase de validação — edital não exige CNPJ na inscrição)_.
@@ -47,14 +47,12 @@ Não _(fase de validação — edital não exige CNPJ na inscrição)_.
 
 ## Problema ou oportunidade (critério — até 20 pts)
 
-**Captação** — conquistar mandatos exclusivos de proprietários — é o gargalo mais doloroso e mais lucrativo das imobiliárias brasileiras. Corretores perdem negócios quando:
+Imobiliárias de 3–10 corretores (beachhead: Florianópolis, Norte da Ilha) sentem a dor nesta ordem:
 
-- não priorizam oportunidades (particular, anúncio parado) a tempo;
-- enviam áudios ou textos desorganizados no WhatsApp — o proprietário não ouve até o fim;
-- o follow-up falha entre WhatsApp, e-mail e telefone;
-- automações “fáceis” violam LGPD e política Meta e **banem o número WhatsApp Business** da agência.
-
-**Impacto financeiro:** cada mandato perdido representa comissão significativa; imobiliárias de médio porte (3–10 corretores) operam com planilhas e WhatsApp pessoal, sem ferramenta de captação integrada.
+1. **Captação é o P&L.** Conquistar mandatos exclusivos de proprietários é onde a agência ganha ou perde dinheiro. Cada mandato perdido é comissão significativa — e o funil ainda vive em planilha + WhatsApp pessoal.
+2. **Outbound ruim mata o primeiro contato.** Corretores perdem negócio no dia a dia: áudio longo que o dono não ouve até o fim, texto desorganizado, follow-up que some entre WhatsApp, e-mail e telefone.
+3. **Qualificação sem velocidade.** Quem já optou (“Quanto vale meu imóvel?”) espera resposta **instantânea e profissional** em PT, ES ou EN. Demora = lead frio.
+4. **Medo de plataforma, não de IA.** Automação errada **bane o número WhatsApp Business** da agência. Precisam de governança e aprovação humana — não de bot de spam.
 
 **Público-alvo inicial:** corretores e imobiliárias em Florianópolis/SC — especialmente Norte da Ilha, com proprietários locais e estrangeiros (ES/EN).
 
@@ -64,16 +62,22 @@ Não _(fase de validação — edital não exige CNPJ na inscrição)_.
 
 ## Solução proposta (critério — até 20 pts)
 
-**Captei** orquestra captação em quatro camadas:
+**Captei** é um copiloto de IA para **captação e qualificação** de proprietários — não um CRM completo, não um agente autônomo que prospecta sozinho.
 
-1. **Descobrir** — sinais públicos (FSBO, anúncios parados) priorizados por IA → worklist para o corretor.
-2. **Atrair** — funil “Quanto vale meu imóvel?” com opt-in explícito (Track A).
-3. **Compor e responder** — corretor fala rough (PT/ES/EN) → IA gera texto WhatsApp, e-mail e áudio profissional → **aprovação obrigatória** → entrega canal-aware.
-4. **Governar** — log de aprovação, CRECI, referência de consentimento — visível para gestora.
+Começamos pela **captação** — o gargalo mais caro — mas a mesma mesa serve qualquer outbound qualificado: qualificação de lead, retorno a proprietário, follow-up entre canais.
+
+Quatro camadas, do primeiro contato **consentido** ao follow-up:
+
+1. **Descobrir** — sinais públicos (FSBO, anúncios parados) priorizados por IA → worklist para o corretor (humano faz o primeiro contato).
+2. **Atrair e qualificar** — funil “Quanto vale meu imóvel?” com opt-in explícito (Track A) → resposta instantânea em texto ou agente de voz ao vivo (PT/ES/EN).
+3. **Compor** — corretor fala rough (PT/ES/EN) → IA gera texto WhatsApp, e-mail e áudio profissional → **aprovação humana obrigatória** → entrega canal-aware (handoff manual no MVP).
+4. **Governar** — log de aprovação, CRECI, referência de consentimento — visível para a gestora.
 
 **Diferencial:** não prometemos disparo frio automatizado para números de portal (proibido e banível). Automatizamos pesquisa, rascunho e cadências **após consentimento**.
 
-**Estágio atual:** demo funcional (compose desk + agente de voz ao vivo) em https://captei-voz.vercel.app/; documentação legal/compliance (`CRM/docs/captacao/`); estratégia BMAD validada — **pré-incubação com protótipo**, alinhado ao Connect IA.
+**Estágio atual:** demo funcional — mesa multicanal (WhatsApp + e-mail + áudio) + agente de voz ao vivo — em https://captei-voz.vercel.app/; documentação legal/estratégia (`CRM/docs/captacao/`); estratégia BMAD validada — **pré-incubação com protótipo**, alinhado ao Connect IA.
+
+**Stack:** multi-provedor; AssemblyAI na demo atual.
 
 **O que pedimos:** validação de mercado com imobiliárias reais, BMC, piloto e pitch Demo Day — não investimento em caixa.
 
@@ -85,16 +89,16 @@ A IA é **núcleo da solução**:
 
 | Aplicação de IA | Papel |
 |-----------------|--------|
-| **STT multilíngue** (AssemblyAI) | Captura fala do corretor em PT/ES/EN, code-switch, ruído de campo |
+| **STT multilíngue** (demo: AssemblyAI) | Captura fala do corretor em PT/ES/EN, code-switch, ruído de campo |
 | **LLM rewrite** | Tom profissional, idioma do proprietário, disclosure CRECI/IA |
 | **Voice Agent** | Qualificação conversacional ao vivo pós-opt-in |
 | **Síntese de voz** | Nota de voz aprovada (stock voice + aviso) |
 | **Scoring de sinais** | Prioriza imóveis com maior probabilidade de captação |
-| **Orquestração multicanal** | Seleciona formato (texto / e-mail / voz) conforme estado de consentimento |
+| **Orquestração multicanal conforme consentimento** | Escolhe formato (texto / e-mail / voz) e o que pode ser automatizado segundo o estado de consentimento |
 
-**Por que isso é IA aplicada, não wrapper:** restrições de plataforma (Meta WhatsApp, LGPD) exigem **decisão agentica** por canal — a IA adapta conteúdo e roteamento, não só gera texto genérico.
+**Por que isso é IA aplicada, não wrapper:** restrições de plataforma (Meta WhatsApp, LGPD) exigem **decisão agentica** por canal — a IA adapta conteúdo e roteamento, não só gera texto genérico. A demo atual usa AssemblyAI; a arquitetura é de adaptadores (`compose/` + `consent/` vendor-neutral → `providers/*`).
 
-Roadmap: integração Fechou CRM, cadências Track C, Prince speed-to-lead, Divulga para aquisição.
+Roadmap: integração Fechou CRM, cadências Track C, Prince speed-to-lead, Divulga para aquisição; TTS/clone ElevenLabs pós-hackathon.
 
 ---
 
@@ -138,6 +142,6 @@ Roteiro: [`video-roteiro.md`](video-roteiro.md).
 ## Notas internas
 
 - Repositório produto: `C:\Users\Admin\Projects\captei-voz`
-- Paperwork: `IntelMuCoCreate/connect-ia/`
+- Paperwork: `IntelMuCoCreate/connect-ia/` (espelho em `docs/connect-ia/` neste repo)
 - IntelMuCoCreate (AlterEgo/MucoCreate): **fora desta inscrição** — desenvolvimento pausado para o edital
-- Hackathon AssemblyAI (30/09): mesmo repo Captei — entrega separada
+- Hackathon AssemblyAI (30/09): mesmo repo Captei — entrega **Captei Voz** (voice agent + compose desk); vídeo separado
