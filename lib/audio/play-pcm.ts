@@ -49,7 +49,7 @@ export class PcmPlayer {
 
   static async attach(ctx: AudioContext): Promise<PcmPlayer> {
     try {
-      await ctx.audioWorklet.addModule("/pcm-player.js?v=3");
+      await ctx.audioWorklet.addModule("/pcm-player.js?v=4");
       const node = new AudioWorkletNode(ctx, "pcm-player", {
         numberOfInputs: 1,
         numberOfOutputs: 1,

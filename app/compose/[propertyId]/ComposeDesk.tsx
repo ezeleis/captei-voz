@@ -3,14 +3,18 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { langChipClass } from "@/app/components/langChip";
-import { PcmPlayer } from "@/lib/audio/play-pcm";
 import { downloadWav, pcm16LeBase64ToWavBlob } from "@/lib/audio/pcm-to-wav";
 import { renderVerbatimInBrowser } from "@/lib/audio/render-verbatim-browser";
 import {
   COMPOSE_VOICE_LABEL,
   voiceForNoteLang,
 } from "@/lib/assemblyai/voices";
-import { assembleFinalNote, type CorretorIdentity } from "@/lib/disclosure";
+import {
+  assembleEmailMessage,
+  assembleVoiceScript,
+  assembleWhatsAppText,
+} from "@/lib/compose/channels";
+import { type CorretorIdentity } from "@/lib/disclosure";
 import { waMeUrl, wavFilename } from "@/lib/handoff";
 import {
   NOTE_LANG_LABEL,
@@ -20,12 +24,19 @@ import {
 
 type DeskState = "idle" | "listening" | "rewriting" | "ready" | "error";
 type RenderState = "idle" | "rendering" | "ready" | "playing";
+type ChannelTab = "whatsapp" | "email" | "audio";
 
 type Props = {
   propertyLabel: string;
   contactName: string;
   contactPhoneE164: string;
 };
+
+function channelTabClass(active: boolean): string {
+  return active
+    ? "rounded-lg bg-clay px-3 py-1.5 text-sm font-semibold text-foam"
+    : "rounded-lg border border-line bg-paper px-3 py-1.5 text-sm font-medium text-ink-muted transition hover:border-tide hover:text-ink";
+}
 
 export function ComposeDesk({
   propertyLabel,
@@ -40,15 +51,19 @@ export function ComposeDesk({
   const [live, setLive] = useState("");
   const [raw, setRaw] = useState("");
   const [rewritten, setRewritten] = useState("");
+  const [whatsappText, setWhatsappText] = useState("");
+  const [emailSubject, setEmailSubject] = useState("");
+  const [emailBody, setEmailBody] = useState("");
+  const [channelTab, setChannelTab] = useState<ChannelTab>("whatsapp");
   const [identity, setIdentity] = useState<CorretorIdentity | null>(null);
   const [approved, setApproved] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState<ChannelTab | "subject" | null>(null);
   const [renderState, setRenderState] = useState<RenderState>("idle");
   const [audioBase64, setAudioBase64] = useState<string | null>(null);
   const [audioDurationMs, setAudioDurationMs] = useState<number | null>(null);
 
-  const playerRef = useRef<PcmPlayer | null>(null);
-  const playCtxRef = useRef<AudioContext | null>(null);
+  const previewRef = useRef<HTMLAudioElement | null>(null);
+  const previewUrlRef = useRef<string | null>(null);
 
   const wsRef = useRef<WebSocket | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
@@ -57,10 +72,19 @@ export function ComposeDesk({
   const turnsRef = useRef<Map<number, string>>(new Map());
 
   const stopPlayback = useCallback(() => {
-    playerRef.current?.dispose();
-    playerRef.current = null;
-    void playCtxRef.current?.close();
-    playCtxRef.current = null;
+    const el = previewRef.current;
+    previewRef.current = null;
+    if (el) {
+      el.onended = null;
+      el.onerror = null;
+      el.pause();
+      el.removeAttribute("src");
+      el.load();
+    }
+    if (previewUrlRef.current) {
+      URL.revokeObjectURL(previewUrlRef.current);
+      previewUrlRef.current = null;
+    }
     setRenderState((current) => (current === "playing" ? "ready" : current));
   }, []);
 
@@ -95,10 +119,14 @@ export function ComposeDesk({
         const response = await fetch("/api/rewrite", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ transcript, outputLang }),
+          body: JSON.stringify({ transcript, outputLang, propertyLabel }),
         });
         const body = (await response.json()) as {
           rewritten?: string;
+          whatsappText?: string;
+          emailSubject?: string;
+          emailBody?: string;
+          finalSpoken?: string;
           identity?: CorretorIdentity | null;
           error?: string;
         };
@@ -106,8 +134,12 @@ export function ComposeDesk({
           throw new Error(body.error ?? "falha na reescrita");
         }
         setRewritten(body.rewritten);
+        setWhatsappText(body.whatsappText ?? "");
+        setEmailSubject(body.emailSubject ?? "");
+        setEmailBody(body.emailBody ?? "");
         setIdentity(body.identity ?? null);
         setNoteLang(outputLang);
+        setChannelTab("whatsapp");
         setApproved(false);
         setAudioBase64(null);
         setAudioDurationMs(null);
@@ -118,7 +150,16 @@ export function ComposeDesk({
         setError(err instanceof Error ? err.message : "falha na reescrita");
       }
     },
-    [outputLang],
+    [outputLang, propertyLabel],
+  );
+
+  const syncChannelsFromBody = useCallback(
+    (body: string, who: CorretorIdentity | null, lang: NoteLang) => {
+      if (!who) return;
+      setWhatsappText(assembleWhatsAppText(body, who, lang));
+      setEmailBody(assembleEmailMessage(body, who, lang));
+    },
+    [],
   );
 
   const stopListening = useCallback(async () => {
@@ -144,6 +185,9 @@ export function ComposeDesk({
     setError(null);
     setApproved(false);
     setRewritten("");
+    setWhatsappText("");
+    setEmailSubject("");
+    setEmailBody("");
     setIdentity(null);
     setRaw("");
     setLive("");
@@ -239,7 +283,9 @@ export function ComposeDesk({
 
   const finalSpoken = useMemo(() => {
     if (!rewritten) return "";
-    return identity ? assembleFinalNote(rewritten, identity, noteLang) : rewritten;
+    return identity
+      ? assembleVoiceScript(rewritten, identity, noteLang)
+      : rewritten;
   }, [identity, noteLang, rewritten]);
 
   const renderAudio = useCallback(async () => {
@@ -269,37 +315,39 @@ export function ComposeDesk({
     );
   }, [audioBase64, contactName, noteLang]);
 
-  const copyNote = useCallback(async () => {
-    if (!finalSpoken) return;
+  const copyText = useCallback(async (text: string, label: ChannelTab | "subject") => {
+    if (!text) return;
     try {
-      await navigator.clipboard.writeText(finalSpoken);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 2000);
+      await navigator.clipboard.writeText(text);
+      setCopied(label);
+      window.setTimeout(() => setCopied(null), 2000);
     } catch {
       setError("não foi possível copiar o texto");
     }
-  }, [finalSpoken]);
+  }, []);
 
   const playAudio = useCallback(async () => {
     if (!audioBase64) return;
     stopPlayback();
     setRenderState("playing");
     try {
-      const ctx = new AudioContext();
-      await ctx.resume();
-      playCtxRef.current = ctx;
-      const player = await PcmPlayer.attach(ctx);
-      playerRef.current = player;
-      player.enqueueBase64(audioBase64);
-      const seconds = (audioDurationMs ?? 0) / 1000 + 0.4;
-      window.setTimeout(() => {
+      // Same bytes as Baixar WAV. The streaming worklet is for live qualify
+      // and used to drop anything past a 4 s ring buffer.
+      const url = URL.createObjectURL(pcm16LeBase64ToWavBlob(audioBase64));
+      previewUrlRef.current = url;
+      const el = new Audio(url);
+      previewRef.current = el;
+      el.onended = () => stopPlayback();
+      el.onerror = () => {
         stopPlayback();
-      }, Math.max(seconds, 1) * 1000);
+        setError("falha ao tocar o áudio");
+      };
+      await el.play();
     } catch (err) {
       stopPlayback();
       setError(err instanceof Error ? err.message : "falha ao tocar o áudio");
     }
-  }, [audioBase64, audioDurationMs, stopPlayback]);
+  }, [audioBase64, stopPlayback]);
 
   useEffect(() => {
     return () => {
@@ -350,7 +398,7 @@ export function ComposeDesk({
           ))}
         </fieldset>
         <p className="text-xs text-ink-muted">
-          Texto e WAV usam a voz de estoque do recado:{" "}
+          WhatsApp, e-mail e áudio saem no idioma do recado. Voz de estoque:{" "}
           <code className="text-ink">{COMPOSE_VOICE_LABEL[outputLang]}</code>
           {rewritten && outputLang !== noteLang
             ? ` — o recado atual ainda está em ${NOTE_LANG_LABEL[noteLang]} (${spokenVoice}). Reescreva para trocar.`
@@ -420,7 +468,9 @@ export function ComposeDesk({
                 rows={8}
                 value={rewritten}
                 onChange={(event) => {
-                  setRewritten(event.target.value);
+                  const next = event.target.value;
+                  setRewritten(next);
+                  syncChannelsFromBody(next, identity, noteLang);
                   setApproved(false);
                   setAudioBase64(null);
                   setAudioDurationMs(null);
@@ -434,84 +484,196 @@ export function ComposeDesk({
         </div>
       ) : null}
 
-      {finalSpoken && state === "ready" ? (
+      {rewritten && state === "ready" ? (
         <aside className="rounded-2xl border border-line bg-foam p-5 text-sm">
-          <h2 className="font-display text-lg font-semibold text-ink">
-            Texto que será falado
-          </h2>
-          <p className="mt-3 whitespace-pre-wrap leading-relaxed">{finalSpoken}</p>
-          <p className="mt-4 text-xs text-ink-muted">
-            Áudio na voz {spokenVoice}, palavra por palavra.
-            {audioDurationMs
-              ? ` Último render: ${(audioDurationMs / 1000).toFixed(1)} s.`
-              : ""}
-          </p>
-          <div className="mt-4 flex flex-wrap gap-3">
-            <button
-              type="button"
-              onClick={() => void renderAudio()}
-              disabled={renderState === "rendering"}
-              className="rounded-xl bg-clay px-4 py-2.5 text-sm font-semibold text-foam shadow-sm transition hover:bg-clay-hover disabled:opacity-40"
-            >
-              {renderState === "rendering"
-                ? "Gerando áudio…"
-                : audioBase64
-                  ? "Gerar de novo"
-                  : "Gerar áudio"}
-            </button>
-            <button
-              type="button"
-              onClick={() => void playAudio()}
-              disabled={!audioBase64 || renderState === "rendering"}
-              className="rounded-xl border border-line bg-paper px-4 py-2.5 text-sm font-medium text-ink disabled:opacity-40"
-            >
-              {renderState === "playing" ? "Tocando…" : "Ouvir"}
-            </button>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="font-display text-lg font-semibold text-ink">
+              Canais de entrega
+            </h2>
+            <nav className="flex flex-wrap gap-2" aria-label="Canal">
+              <button
+                type="button"
+                onClick={() => setChannelTab("whatsapp")}
+                className={channelTabClass(channelTab === "whatsapp")}
+              >
+                WhatsApp
+              </button>
+              <button
+                type="button"
+                onClick={() => setChannelTab("email")}
+                className={channelTabClass(channelTab === "email")}
+              >
+                E-mail
+              </button>
+              <button
+                type="button"
+                onClick={() => setChannelTab("audio")}
+                className={channelTabClass(channelTab === "audio")}
+              >
+                Áudio
+              </button>
+            </nav>
+          </div>
+
+          {channelTab === "whatsapp" ? (
+            <div className="mt-4">
+              <p className="text-xs text-ink-muted">
+                Copiar e colar na conversa que o proprietário já abriu. Envio
+                manual — nada é disparado por bot.
+              </p>
+              <textarea
+                className="mt-3 w-full resize-y rounded-xl border border-line bg-paper p-3 leading-relaxed text-ink outline-none focus:border-tide"
+                rows={10}
+                value={whatsappText}
+                onChange={(event) => {
+                  setWhatsappText(event.target.value);
+                  setApproved(false);
+                }}
+              />
+              <div className="mt-3 flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  onClick={() => void copyText(whatsappText, "whatsapp")}
+                  className="rounded-xl border border-line bg-paper px-4 py-2.5 text-sm font-medium text-ink"
+                >
+                  {copied === "whatsapp" ? "Copiado" : "Copiar texto"}
+                </button>
+                <a
+                  href={waMeUrl(contactPhoneE164, whatsappText)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="rounded-xl border border-line bg-paper px-4 py-2.5 text-sm font-medium text-ink"
+                >
+                  Abrir WhatsApp
+                </a>
+              </div>
+            </div>
+          ) : null}
+
+          {channelTab === "email" ? (
+            <div className="mt-4 space-y-3">
+              <label className="block">
+                <span className="text-xs font-semibold uppercase tracking-[0.14em] text-ink-muted">
+                  Assunto
+                </span>
+                <input
+                  type="text"
+                  className="mt-1 w-full rounded-xl border border-line bg-paper px-3 py-2.5 text-ink outline-none focus:border-tide"
+                  value={emailSubject}
+                  onChange={(event) => {
+                    setEmailSubject(event.target.value);
+                    setApproved(false);
+                  }}
+                />
+              </label>
+              <label className="block">
+                <span className="text-xs font-semibold uppercase tracking-[0.14em] text-ink-muted">
+                  Corpo
+                </span>
+                <textarea
+                  className="mt-1 w-full resize-y rounded-xl border border-line bg-paper p-3 leading-relaxed text-ink outline-none focus:border-tide"
+                  rows={12}
+                  value={emailBody}
+                  onChange={(event) => {
+                    setEmailBody(event.target.value);
+                    setApproved(false);
+                  }}
+                />
+              </label>
+              <div className="flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  onClick={() => void copyText(emailSubject, "subject")}
+                  className="rounded-xl border border-line bg-paper px-4 py-2.5 text-sm font-medium text-ink"
+                >
+                  {copied === "subject" ? "Assunto copiado" : "Copiar assunto"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void copyText(emailBody, "email")}
+                  className="rounded-xl border border-line bg-paper px-4 py-2.5 text-sm font-medium text-ink"
+                >
+                  {copied === "email" ? "E-mail copiado" : "Copiar e-mail"}
+                </button>
+              </div>
+            </div>
+          ) : null}
+
+          {channelTab === "audio" ? (
+            <div className="mt-4">
+              <p className="whitespace-pre-wrap leading-relaxed text-ink">
+                {finalSpoken}
+              </p>
+              <p className="mt-4 text-xs text-ink-muted">
+                Áudio na voz {spokenVoice}, palavra por palavra.
+                {audioDurationMs
+                  ? ` Último render: ${(audioDurationMs / 1000).toFixed(1)} s.`
+                  : ""}
+              </p>
+              <div className="mt-4 flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  onClick={() => void renderAudio()}
+                  disabled={renderState === "rendering"}
+                  className="rounded-xl bg-clay px-4 py-2.5 text-sm font-semibold text-foam shadow-sm transition hover:bg-clay-hover disabled:opacity-40"
+                >
+                  {renderState === "rendering"
+                    ? "Gerando áudio…"
+                    : audioBase64
+                      ? "Gerar de novo"
+                      : "Gerar áudio"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void playAudio()}
+                  disabled={!audioBase64 || renderState === "rendering"}
+                  className="rounded-xl border border-line bg-paper px-4 py-2.5 text-sm font-medium text-ink disabled:opacity-40"
+                >
+                  {renderState === "playing" ? "Tocando…" : "Ouvir"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void copyText(finalSpoken, "audio")}
+                  className="rounded-xl border border-line bg-paper px-4 py-2.5 text-sm font-medium text-ink"
+                >
+                  {copied === "audio" ? "Roteiro copiado" : "Copiar roteiro"}
+                </button>
+              </div>
+            </div>
+          ) : null}
+
+          <div className="mt-6 border-t border-line pt-4">
             <button
               type="button"
               onClick={() => setApproved(true)}
-              disabled={!audioBase64}
-              className="rounded-xl border border-line bg-paper px-4 py-2.5 text-sm font-medium text-ink disabled:opacity-40"
+              className="rounded-xl bg-tide px-4 py-2.5 text-sm font-semibold text-foam shadow-sm transition hover:opacity-90"
             >
-              {approved ? "Aprovado" : "Aprovar texto e áudio"}
+              {approved ? "Mensagens aprovadas" : "Aprovar para entrega manual"}
             </button>
           </div>
         </aside>
       ) : null}
 
-      {approved && audioBase64 ? (
+      {approved ? (
         <aside className="rounded-2xl border border-moss/25 bg-moss-bg p-5 text-sm">
           <h2 className="font-display text-lg font-semibold text-moss">
-            Entrega manual
+            Entrega manual — copiar em cada canal
           </h2>
           <p className="mt-2 text-ink">
-            O WhatsApp abre o texto; o áudio não vai no link. Baixe o WAV e
-            envie na conversa que o proprietário já abriu.
+            Use os botões acima por canal. O áudio WAV só existe se você gerou
+            na aba Áudio; o WhatsApp não anexa áudio pelo link wa.me.
           </p>
-          <div className="mt-4 flex flex-wrap gap-3">
-            <button
-              type="button"
-              onClick={downloadAudio}
-              className="rounded-xl bg-clay px-4 py-2.5 text-sm font-semibold text-foam shadow-sm transition hover:bg-clay-hover"
-            >
-              Baixar WAV
-            </button>
-            <button
-              type="button"
-              onClick={() => void copyNote()}
-              className="rounded-xl border border-line bg-foam px-4 py-2.5 text-sm font-medium text-ink"
-            >
-              {copied ? "Texto copiado" : "Copiar texto"}
-            </button>
-            <a
-              href={waMeUrl(contactPhoneE164, finalSpoken)}
-              target="_blank"
-              rel="noreferrer"
-              className="rounded-xl border border-line bg-foam px-4 py-2.5 text-sm font-medium text-ink"
-            >
-              Abrir WhatsApp
-            </a>
-          </div>
+          {audioBase64 ? (
+            <div className="mt-4">
+              <button
+                type="button"
+                onClick={downloadAudio}
+                className="rounded-xl bg-clay px-4 py-2.5 text-sm font-semibold text-foam shadow-sm transition hover:bg-clay-hover"
+              >
+                Baixar WAV
+              </button>
+            </div>
+          ) : null}
         </aside>
       ) : null}
     </section>

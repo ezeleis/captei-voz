@@ -12,7 +12,10 @@ class PCMPlayer extends AudioWorkletProcessor {
       options?.processorOptions?.sourceSampleRate || SOURCE_RATE;
     this.step = sourceRate / sampleRate;
     this.primeFrames = Math.floor(sourceRate * 0.08);
-    this.cap = sourceRate * 4;
+    // Live qualify streams near playback rate. Compose used to dump a whole
+    // note here and anything past 4 s was dropped — keep a long cap anyway
+    // so a fast greeting burst cannot clip.
+    this.cap = sourceRate * 120;
     this.buf = new Float32Array(this.cap);
     this.read = 0;
     this.write = 0;

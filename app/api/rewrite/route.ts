@@ -1,15 +1,38 @@
 import { NextResponse } from "next/server";
 
+import { rewriteOmnichannel } from "@/lib/assemblyai/rewrite-omnichannel";
 import { rewriteDraft } from "@/lib/assemblyai/rewrite";
 import {
-  assembleFinalNote,
-  containsForbiddenClaim,
-} from "@/lib/disclosure";
+  assembleEmailMessage,
+  assembleVoiceScript,
+  assembleWhatsAppText,
+} from "@/lib/compose/channels";
+import { containsForbiddenClaim } from "@/lib/disclosure";
 import { corretorIdentity, isConfigured } from "@/lib/env";
 import { isNoteLang, type NoteLang } from "@/lib/note-lang";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
+
+function defaultEmailSubject(outputLang: NoteLang, propertyLabel?: string): string {
+  const place = propertyLabel?.trim();
+  switch (outputLang) {
+    case "es":
+      return place ? `Consulta sobre ${place}` : "Consulta sobre su propiedad";
+    case "en":
+      return place ? `Regarding ${place}` : "Regarding your property";
+    default:
+      return place ? `Contato sobre ${place}` : "Contato sobre seu imóvel";
+  }
+}
+
+function forbiddenInFields(fields: Record<string, string>): string | null {
+  for (const value of Object.values(fields)) {
+    const hit = containsForbiddenClaim(value);
+    if (hit) return hit;
+  }
+  return null;
+}
 
 export async function POST(request: Request) {
   if (!isConfigured("ASSEMBLYAI_API_KEY")) {
@@ -19,7 +42,11 @@ export async function POST(request: Request) {
     );
   }
 
-  let body: { transcript?: string; outputLang?: string };
+  let body: {
+    transcript?: string;
+    outputLang?: string;
+    propertyLabel?: string;
+  };
   try {
     body = (await request.json()) as typeof body;
   } catch {
@@ -34,10 +61,50 @@ export async function POST(request: Request) {
   const outputLang: NoteLang = isNoteLang(body.outputLang)
     ? body.outputLang
     : "pt";
+  const propertyLabel = body.propertyLabel?.trim();
 
   try {
-    const rewritten = await rewriteDraft(transcript, outputLang);
-    const forbidden = containsForbiddenClaim(rewritten);
+    let coreBody: string;
+    let whatsappBody: string;
+    let emailSubject: string;
+    let emailCore: string;
+
+    try {
+      const draft = await rewriteOmnichannel(
+        transcript,
+        outputLang,
+        propertyLabel,
+      );
+      coreBody = draft.body;
+      whatsappBody = draft.whatsappBody;
+      emailSubject = draft.emailSubject;
+      emailCore = draft.emailBody;
+    } catch (omniError) {
+      console.warn("omnichannel rewrite fallback:", omniError);
+      coreBody = await rewriteDraft(transcript, outputLang);
+      whatsappBody = coreBody;
+      emailSubject = defaultEmailSubject(outputLang, propertyLabel);
+      emailCore = coreBody;
+    }
+
+    const who = corretorIdentity();
+    const whatsappText = who
+      ? assembleWhatsAppText(whatsappBody, who, outputLang)
+      : whatsappBody;
+    const emailBody = who
+      ? assembleEmailMessage(emailCore, who, outputLang)
+      : emailCore;
+    const finalSpoken = who
+      ? assembleVoiceScript(coreBody, who, outputLang)
+      : coreBody;
+
+    const forbidden = forbiddenInFields({
+      coreBody,
+      whatsappText,
+      emailSubject,
+      emailBody,
+      finalSpoken,
+    });
     if (forbidden) {
       return NextResponse.json(
         { error: `rewrite produced a forbidden claim: ${forbidden}` },
@@ -45,13 +112,11 @@ export async function POST(request: Request) {
       );
     }
 
-    const who = corretorIdentity();
-    const finalSpoken = who
-      ? assembleFinalNote(rewritten, who, outputLang)
-      : rewritten;
-
     return NextResponse.json({
-      rewritten,
+      rewritten: coreBody,
+      whatsappText,
+      emailSubject,
+      emailBody,
       finalSpoken,
       outputLang,
       identity: who,
