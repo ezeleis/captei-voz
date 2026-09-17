@@ -51,3 +51,102 @@ body {
 .listen-pulse {
   animation: listen-pulse 1.6s ease-out infinite;
 }
+
+/* Mobile field interview docs (/connect-ia/entrevistas) */
+.field-doc {
+  font-size: 1.05rem;
+  line-height: 1.65;
+  color: var(--color-ink);
+}
+
+.field-doc h1 {
+  font-family: var(--font-display);
+  font-size: 1.65rem;
+  font-weight: 600;
+  line-height: 1.25;
+  margin-bottom: 0.75rem;
+}
+
+.field-doc h2 {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 0.65rem;
+  color: var(--color-ink);
+}
+
+.field-doc h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-top: 1.35rem;
+  margin-bottom: 0.5rem;
+  color: var(--color-tide);
+}
+
+.field-doc p {
+  margin-bottom: 0.85rem;
+  color: var(--color-ink-muted);
+}
+
+.field-doc strong {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+
+.field-doc blockquote {
+  border-left: 3px solid var(--color-tide);
+  margin: 1rem 0;
+  padding: 0.65rem 0 0.65rem 1rem;
+  background: var(--color-foam);
+  border-radius: 0 0.75rem 0.75rem 0;
+  color: var(--color-ink);
+  font-style: normal;
+}
+
+.field-doc blockquote p {
+  margin-bottom: 0;
+  color: var(--color-ink);
+}
+
+.field-doc hr {
+  border: none;
+  border-top: 1px solid var(--color-line);
+  margin: 1.75rem 0;
+}
+
+.field-doc ul {
+  list-style: disc;
+  margin: 0.75rem 0 1rem 1.25rem;
+  color: var(--color-ink-muted);
+}
+
+.field-doc li {
+  margin-bottom: 0.45rem;
+}
+
+.field-doc table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.95rem;
+}
+
+.field-doc th,
+.field-doc td {
+  border: 1px solid var(--color-line);
+  padding: 0.5rem 0.65rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.field-doc th {
+  background: var(--color-foam);
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.field-doc em {
+  font-size: 0.9rem;
+  color: var(--color-ink-muted);
+}

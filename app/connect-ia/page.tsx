@@ -74,6 +74,14 @@ export default function ConnectIaPage() {
               Qualificação ao vivo →
             </Link>
           </li>
+          <li>
+            <Link
+              href="/connect-ia/entrevistas"
+              className="font-semibold text-tide hover:text-ink"
+            >
+              Roteiros de entrevista (PT / ES) →
+            </Link>
+          </li>
         </ul>
       </main>
       <footer className="border-t border-line/80 px-6 py-5 text-center text-sm text-ink-muted">
